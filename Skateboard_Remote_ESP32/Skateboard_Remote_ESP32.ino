@@ -1112,7 +1112,6 @@ void getJoystick(void)
   }
 
 
-  // toggle radio usage (flick to right)
   // toggle motor enable (flick to left)
   if (last_x_pot != x_pot)
   {
@@ -1678,27 +1677,26 @@ void loop(void)
   // printButtonData();
   // printRadioData();
 
+  // Perform action if joystick flicked to left
+  // When safety off
   if (vib_toggle == 1)
   {
-    // speed = 5;
+
   }
   else
   {
-    // speed = -7;
+
   }
 
-
+  // Perform action if joystick flicked down
+  // When on home screen
   if (debugToggle == 1)
   {
-    // menu = 1;
-    // enableCurrent();
-    // enableRpm();
-    // enableDuty();  // send int percent
+
   }
   else
   {
-    // menu = 0;
-    // disableMotor();
+
   }
 
   batPercentS = -1;
