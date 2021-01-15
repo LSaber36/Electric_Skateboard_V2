@@ -27,6 +27,7 @@ uint32_t pressTime = 0;
 #define BIT7 (1<<7)
 
 // Joystick declarations
+// Change the pin numbers here
 #define X_POT_PIN 39
 #define Y_POT_PIN 34
 int16_t x_pot = 0;
