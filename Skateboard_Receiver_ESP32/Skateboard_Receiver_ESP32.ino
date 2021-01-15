@@ -62,10 +62,10 @@ typedef struct receiver_message
   uint32_t speed;
 }receiver_message;
 
-// Radio sending address
-// uint8_t broadcastAddress[] = {0xAC, 0x67, 0xB2, 0x31, 0x9A, 0xF0};
+// DEVKIT V1 Remote    7C:9E:BD:F3:50:DC
+// Standalone Remote   F0:08:D1:D1:6F:18
 
-// Standalone   F0:08:D1:D1:6F:18
+// uint8_t broadcastAddress[] = {0x7C, 0x9E, 0xBD, 0xF3, 0x50, 0xDC};
 uint8_t broadcastAddress[] = {0xF0, 0x08, 0xD1, 0xD1, 0x6F, 0x18};
 
 sender_message senderData;
