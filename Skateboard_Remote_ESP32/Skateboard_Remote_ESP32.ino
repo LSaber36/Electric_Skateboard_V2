@@ -1142,10 +1142,10 @@ void getButtons(void)
 
 
   // button 1 (the joystick)
-  if (b2_state_last != b2_state)
+  if (b1_state_last != b1_state)
   {
     // button state is changing
-    if (b2_state == 1)
+    if (b1_state == 1)
     {
       // button being pressed
       buttonTimer = 0;
