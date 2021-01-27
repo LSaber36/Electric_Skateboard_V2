@@ -6,10 +6,10 @@
 #include <elapsedMillis.h>
 
 // Backlight led setup
-#define RESOLUTION 10     // Use a resolution of 10-bits so we have an easy 0-1024 range
+#define RESOLUTION 10     // Use a resolution of 10-bits so we have an easy 0-1023 range
 #define FREQ 5000         // Use a pre-set frequency of 5000Hz
 #define BL_CHANNEL 0      // Use the first pwm channel
-#define VIB_CHANNEL 1   // Use the first pwm channel
+#define VIB_CHANNEL 1     // Use the first pwm channel
 
 elapsedMillis buttonTimer, vibTimer;
 uint32_t pressTime = 0;
@@ -169,9 +169,11 @@ float skateboardVoltFloat = 0;
 // Screen debugging info: 0 is off and nonzero is on
 #define SCREEN_DEBUG 1
 
-#define BG_COLOR 0xFDCF
 #define LIGHT_BLUE 0x45DF
 #define LIGHT_GRAY 0xB5B6
+#define HOME_BG_COLOR 0xFDCF
+#define SETTINGS_BG_COLOR LIGHT_GRAY
+#define MEME_BG_COLOR LIGHT_BLUE
 int16_t bright = 1023;  // display brightness [0 - 1023]
 
 TFT_eSPI tft = TFT_eSPI();
@@ -234,6 +236,31 @@ const uint16_t iconR [] PROGMEM =
   0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
   0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
   0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff
+};
+
+const uint16_t iconBackArrow [] PROGMEM = 
+{
+    0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 
+    0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 
+    0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 
+    0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 
+    0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 
+    0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 
+    0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff
 };
 
 const uint16_t peanut [] PROGMEM =
@@ -419,7 +446,7 @@ void sendRadioData(void)
 
 void renderInitialHomeScreen(void)
 {
-  tft.fillScreen(BG_COLOR);
+  tft.fillScreen(HOME_BG_COLOR);
 
   // draw the throttle indicator (may need a redesign)
   tft.fillRect(17, 210, 2, 18, TFT_BLACK);      // throttle left line
@@ -463,7 +490,7 @@ void renderInitialHomeScreen(void)
 
 void renderHomeScreen(void)
 {
-  tft.setTextColor(TFT_BLACK, BG_COLOR);
+  tft.setTextColor(TFT_BLACK, HOME_BG_COLOR);
 
   // only print certain parts of screen once (for optimization)
   if (firstHomeRenderFlag == 0)
@@ -472,49 +499,49 @@ void renderHomeScreen(void)
   // draw the skateboard battery level indicators
   if (batPercentS <= 0)
   {
-    tft.fillRect(41, 10, 58, 4, BG_COLOR);  // fill in the blank space around the message
-    tft.fillRect(41, 30, 58, 4, BG_COLOR);
+    tft.fillRect(41, 10, 58, 4, HOME_BG_COLOR);  // fill in the blank space around the message
+    tft.fillRect(41, 30, 58, 4, HOME_BG_COLOR);
     tft.setCursor(41, 14);
     tft.print("Error");
   }
   else if (batPercentS <= 20)
   {
     tft.fillRect(41, 10, 9, 24, TFT_RED);
-    tft.fillRect(53, 10, 9, 24, BG_COLOR);
-    tft.fillRect(65, 10, 9, 24, BG_COLOR);
-    tft.fillRect(77, 10, 9, 24, BG_COLOR);
-    tft.fillRect(89, 10, 9, 24, BG_COLOR);
-    tft.fillRect(50, 10, 2, 24, BG_COLOR);
-    tft.fillRect(62, 10, 2, 24, BG_COLOR);
-    tft.fillRect(74, 10, 2, 24, BG_COLOR);
-    tft.fillRect(86, 10, 2, 24, BG_COLOR);
-    tft.fillRect(98, 10, 2, 24, BG_COLOR);
+    tft.fillRect(53, 10, 9, 24, HOME_BG_COLOR);
+    tft.fillRect(65, 10, 9, 24, HOME_BG_COLOR);
+    tft.fillRect(77, 10, 9, 24, HOME_BG_COLOR);
+    tft.fillRect(89, 10, 9, 24, HOME_BG_COLOR);
+    tft.fillRect(50, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(62, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(74, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(86, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(98, 10, 2, 24, HOME_BG_COLOR);
   }
   else if (batPercentS <= 40)
   {
     tft.fillRect(41, 10, 9, 24, TFT_RED);
     tft.fillRect(53, 10, 9, 24, TFT_RED);
-    tft.fillRect(65, 10, 9, 24, BG_COLOR);
-    tft.fillRect(77, 10, 9, 24, BG_COLOR);
-    tft.fillRect(89, 10, 9, 24, BG_COLOR);
-    tft.fillRect(50, 10, 2, 24, BG_COLOR);
-    tft.fillRect(62, 10, 2, 24, BG_COLOR);
-    tft.fillRect(74, 10, 2, 24, BG_COLOR);
-    tft.fillRect(86, 10, 2, 24, BG_COLOR);
-    tft.fillRect(98, 10, 2, 24, BG_COLOR);
+    tft.fillRect(65, 10, 9, 24, HOME_BG_COLOR);
+    tft.fillRect(77, 10, 9, 24, HOME_BG_COLOR);
+    tft.fillRect(89, 10, 9, 24, HOME_BG_COLOR);
+    tft.fillRect(50, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(62, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(74, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(86, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(98, 10, 2, 24, HOME_BG_COLOR);
   }
   else if (batPercentS <= 60)
   {
     tft.fillRect(41, 10, 9, 24, 0xFF60);
     tft.fillRect(53, 10, 9, 24, 0xFF60);
     tft.fillRect(65, 10, 9, 24, 0xFF60);
-    tft.fillRect(77, 10, 9, 24, BG_COLOR);
-    tft.fillRect(89, 10, 9, 24, BG_COLOR);
-    tft.fillRect(50, 10, 2, 24, BG_COLOR);
-    tft.fillRect(62, 10, 2, 24, BG_COLOR);
-    tft.fillRect(74, 10, 2, 24, BG_COLOR);
-    tft.fillRect(86, 10, 2, 24, BG_COLOR);
-    tft.fillRect(98, 10, 2, 24, BG_COLOR);
+    tft.fillRect(77, 10, 9, 24, HOME_BG_COLOR);
+    tft.fillRect(89, 10, 9, 24, HOME_BG_COLOR);
+    tft.fillRect(50, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(62, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(74, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(86, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(98, 10, 2, 24, HOME_BG_COLOR);
   }
   else if (batPercentS <= 80)
   {
@@ -522,12 +549,12 @@ void renderHomeScreen(void)
     tft.fillRect(53, 10, 9, 24, TFT_GREEN);
     tft.fillRect(65, 10, 9, 24, TFT_GREEN);
     tft.fillRect(77, 10, 9, 24, TFT_GREEN);
-    tft.fillRect(89, 10, 9, 24, BG_COLOR);
-    tft.fillRect(50, 10, 2, 24, BG_COLOR);
-    tft.fillRect(62, 10, 2, 24, BG_COLOR);
-    tft.fillRect(74, 10, 2, 24, BG_COLOR);
-    tft.fillRect(86, 10, 2, 24, BG_COLOR);
-    tft.fillRect(98, 10, 2, 24, BG_COLOR);
+    tft.fillRect(89, 10, 9, 24, HOME_BG_COLOR);
+    tft.fillRect(50, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(62, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(74, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(86, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(98, 10, 2, 24, HOME_BG_COLOR);
   }
   else if (batPercentS <= 100)
   {
@@ -536,11 +563,11 @@ void renderHomeScreen(void)
     tft.fillRect(65, 10, 9, 24, TFT_GREEN);
     tft.fillRect(77, 10, 9, 24, TFT_GREEN);
     tft.fillRect(89, 10, 9, 24, TFT_GREEN);
-    tft.fillRect(50, 10, 2, 24, BG_COLOR);
-    tft.fillRect(62, 10, 2, 24, BG_COLOR);
-    tft.fillRect(74, 10, 2, 24, BG_COLOR);
-    tft.fillRect(86, 10, 2, 24, BG_COLOR);
-    tft.fillRect(98, 10, 2, 24, BG_COLOR);
+    tft.fillRect(50, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(62, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(74, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(86, 10, 2, 24, HOME_BG_COLOR);
+    tft.fillRect(98, 10, 2, 24, HOME_BG_COLOR);
   }
   else
   {
@@ -568,41 +595,41 @@ void renderHomeScreen(void)
     if (batPercentR <= 20)
     {
       tft.fillRect(163, 10, 9, 24, TFT_RED);
-      tft.fillRect(175, 10, 9, 24, BG_COLOR);
-      tft.fillRect(187, 10, 9, 24, BG_COLOR);
-      tft.fillRect(199, 10, 9, 24, BG_COLOR);
-      tft.fillRect(211, 10, 9, 24, BG_COLOR);
-      tft.fillRect(172, 10, 2, 24, BG_COLOR);
-      tft.fillRect(184, 10, 2, 24, BG_COLOR);
-      tft.fillRect(196, 10, 2, 24, BG_COLOR);
-      tft.fillRect(208, 10, 2, 24, BG_COLOR);
-      tft.fillRect(220, 10, 1, 24, BG_COLOR);
+      tft.fillRect(175, 10, 9, 24, HOME_BG_COLOR);
+      tft.fillRect(187, 10, 9, 24, HOME_BG_COLOR);
+      tft.fillRect(199, 10, 9, 24, HOME_BG_COLOR);
+      tft.fillRect(211, 10, 9, 24, HOME_BG_COLOR);
+      tft.fillRect(172, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(184, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(196, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(208, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(220, 10, 1, 24, HOME_BG_COLOR);
     }
     else if (batPercentR <= 40)
     {
       tft.fillRect(163, 10, 9, 24, TFT_RED);
       tft.fillRect(175, 10, 9, 24, TFT_RED);
-      tft.fillRect(187, 10, 9, 24, BG_COLOR);
-      tft.fillRect(199, 10, 9, 24, BG_COLOR);
-      tft.fillRect(211, 10, 9, 24, BG_COLOR);
-      tft.fillRect(172, 10, 2, 24, BG_COLOR);
-      tft.fillRect(184, 10, 2, 24, BG_COLOR);
-      tft.fillRect(196, 10, 2, 24, BG_COLOR);
-      tft.fillRect(208, 10, 2, 24, BG_COLOR);
-      tft.fillRect(220, 10, 1, 24, BG_COLOR);
+      tft.fillRect(187, 10, 9, 24, HOME_BG_COLOR);
+      tft.fillRect(199, 10, 9, 24, HOME_BG_COLOR);
+      tft.fillRect(211, 10, 9, 24, HOME_BG_COLOR);
+      tft.fillRect(172, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(184, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(196, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(208, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(220, 10, 1, 24, HOME_BG_COLOR);
     }
     else if (batPercentR <= 60)
     {
       tft.fillRect(163, 10, 9, 24, 0xFF60);
       tft.fillRect(175, 10, 9, 24, 0xFF60);
       tft.fillRect(187, 10, 9, 24, 0xFF60);
-      tft.fillRect(199, 10, 9, 24, BG_COLOR);
-      tft.fillRect(211, 10, 9, 24, BG_COLOR);
-      tft.fillRect(172, 10, 2, 24, BG_COLOR);
-      tft.fillRect(184, 10, 2, 24, BG_COLOR);
-      tft.fillRect(196, 10, 2, 24, BG_COLOR);
-      tft.fillRect(208, 10, 2, 24, BG_COLOR);
-      tft.fillRect(220, 10, 1, 24, BG_COLOR);
+      tft.fillRect(199, 10, 9, 24, HOME_BG_COLOR);
+      tft.fillRect(211, 10, 9, 24, HOME_BG_COLOR);
+      tft.fillRect(172, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(184, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(196, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(208, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(220, 10, 1, 24, HOME_BG_COLOR);
     }
     else if (batPercentR <= 80)
     {
@@ -610,12 +637,12 @@ void renderHomeScreen(void)
       tft.fillRect(175, 10, 9, 24, TFT_GREEN);
       tft.fillRect(187, 10, 9, 24, TFT_GREEN);
       tft.fillRect(199, 10, 9, 24, TFT_GREEN);
-      tft.fillRect(211, 10, 9, 24, BG_COLOR);
-      tft.fillRect(172, 10, 2, 24, BG_COLOR);
-      tft.fillRect(184, 10, 2, 24, BG_COLOR);
-      tft.fillRect(196, 10, 2, 24, BG_COLOR);
-      tft.fillRect(208, 10, 2, 24, BG_COLOR);
-      tft.fillRect(220, 10, 1, 24, BG_COLOR);
+      tft.fillRect(211, 10, 9, 24, HOME_BG_COLOR);
+      tft.fillRect(172, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(184, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(196, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(208, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(220, 10, 1, 24, HOME_BG_COLOR);
     }
     else if (batPercentR <= 100)
     {
@@ -624,11 +651,11 @@ void renderHomeScreen(void)
       tft.fillRect(187, 10, 9, 24, TFT_GREEN);
       tft.fillRect(199, 10, 9, 24, TFT_GREEN);
       tft.fillRect(211, 10, 9, 24, TFT_GREEN);
-      tft.fillRect(172, 10, 2, 24, BG_COLOR);
-      tft.fillRect(184, 10, 2, 24, BG_COLOR);
-      tft.fillRect(196, 10, 2, 24, BG_COLOR);
-      tft.fillRect(208, 10, 2, 24, BG_COLOR);
-      tft.fillRect(220, 10, 1, 24, BG_COLOR);
+      tft.fillRect(172, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(184, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(196, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(208, 10, 2, 24, HOME_BG_COLOR);
+      tft.fillRect(220, 10, 1, 24, HOME_BG_COLOR);
     }
   }
 
@@ -641,8 +668,8 @@ void renderHomeScreen(void)
     if (chargeFlag == 1)
     {
       // fill in the blank space around the message
-      tft.fillRect(163, 10, 58, 4, BG_COLOR);
-      tft.fillRect(163, 30, 58, 4, BG_COLOR);
+      tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
+      tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
       tft.setCursor(163, 14);
       tft.print("Chrg.");
     }
@@ -671,8 +698,8 @@ void renderHomeScreen(void)
     {
       batPercentR = 0;  // try to fix the percent problem if above 100
 
-      tft.fillRect(163, 10, 58, 4, BG_COLOR);  // fill in the blank space around the message
-      tft.fillRect(163, 30, 58, 4, BG_COLOR);  // fill in the blank space around the message
+      tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);  // fill in the blank space around the message
+      tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);  // fill in the blank space around the message
       tft.setCursor(163, 14);
       tft.print("Pgrm.");
     }
@@ -682,8 +709,8 @@ void renderHomeScreen(void)
       batPercentR = 0;  // try to fix the percent problem if above 100
 
       // fill in the blank space around the message
-      tft.fillRect(163, 10, 58, 4, BG_COLOR);
-      tft.fillRect(163, 30, 58, 4, BG_COLOR);
+      tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
+      tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
       tft.setCursor(163, 14);
 
       // weird delay between 1st average complete and 1st print performed
@@ -735,7 +762,7 @@ void renderHomeScreen(void)
   else
   {
     statusSend = 0;
-    tft.fillCircle(18, 50, 7, BG_COLOR);
+    tft.fillCircle(18, 50, 7, HOME_BG_COLOR);
   }
 
 
@@ -747,12 +774,12 @@ void renderHomeScreen(void)
 
   if ((100 - barWidthR) >= 1)  // width of the throttle cover up bar
   {
-    tft.fillRect(centerR + 1 + barWidthR, 209, 100 - barWidthR, 20, BG_COLOR);
+    tft.fillRect(centerR + 1 + barWidthR, 209, 100 - barWidthR, 20, HOME_BG_COLOR);
   }
 
   if ((100 - barWidthL) >= 1)  // width of the brake cover up bar
   {
-    tft.fillRect(centerL - 100, 209, 100 - barWidthL, 20, BG_COLOR);
+    tft.fillRect(centerL - 100, 209, 100 - barWidthL, 20, HOME_BG_COLOR);
   }
 
   if (barWidthL >= 1)
@@ -763,7 +790,12 @@ void renderHomeScreen(void)
 
 void renderInitialSettingsMenu(void)
 {
-  tft.fillScreen(LIGHT_GRAY);
+  tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);
+  tft.fillScreen(SETTINGS_BG_COLOR);
+  tft.pushImage(15, 15, 23, 21, iconBackArrow, TFT_WHITE);
+  tft.setTextSize(3);
+  tft.setCursor(65, 13);
+  tft.print("Settings");
 }
 
 void renderSettingsMenu(void)
@@ -777,13 +809,13 @@ void renderInitialMemeMenu(void)
 {
   tft.fillScreen(LIGHT_BLUE);
 
-  tft.setTextColor(TFT_BLACK, LIGHT_BLUE);
+  tft.setTextColor(TFT_BLACK, MEME_BG_COLOR);
   tft.setTextSize(2);
   tft.setCursor(47, 22);
   tft.print("The Almighty");
   tft.setCursor(85, 47);
   tft.print("Peanut");
-  tft.setTextColor(TFT_BLACK, BG_COLOR);
+  tft.setTextColor(TFT_BLACK, HOME_BG_COLOR);
 
   // Draw Peanut, in all his glory...
   tft.pushImage(10, 77, 220, 147, peanut);
@@ -1596,7 +1628,7 @@ void setup(void)
 
   tft.init();
   tft.setRotation(0);
-  tft.fillScreen(BG_COLOR);
+  tft.fillScreen(HOME_BG_COLOR);
   tft.setTextSize(2);
   tft.setTextWrap(false);
   tft.setSwapBytes(true);
@@ -1673,7 +1705,7 @@ void loop(void)
   getButtons();
   getBattery();
 
-  printData();
+  // printData();
   // printButtonData();
   // printRadioData();
 
