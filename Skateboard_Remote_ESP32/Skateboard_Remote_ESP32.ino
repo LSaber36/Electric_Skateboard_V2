@@ -1250,19 +1250,6 @@ void getButtons(void)
     {
       // button being pressed
       buttonTimer = 0;
-
-      if (menu == HOME_MENU)
-      {
-
-      }
-      else if (menu == SETTINGS_MENU)
-      {
-
-      }
-      else if (menu == MEME_MENU)
-      {
-
-      }
     }
     else
     {
@@ -1304,38 +1291,12 @@ void getButtons(void)
           menu = MEME_MENU;
         }
       }
-
-
-      if (menu == HOME_MENU)
-      {
-
-      }
-      else if (menu == SETTINGS_MENU)
-      {
-
-      }
-      else if (menu == MEME_MENU)
-      {
-
-      }
     }
   }
   else
   {
     // button state is constant
-
-    if (menu == HOME_MENU)
-    {
-
-    }
-    else if (menu == SETTINGS_MENU)
-    {
-
-    }
-    else if (menu == MEME_MENU)
-    {
-
-    }
+    // Perform an action after a period of time WITHOUT releasing the button
   }
 
 
@@ -1373,37 +1334,12 @@ void getButtons(void)
     else
     {
       // button being released
-
-      if (menu == HOME_MENU)
-      {
-
-      }
-      else if (menu == SETTINGS_MENU)
-      {
-
-      }
-      else if (menu == MEME_MENU)
-      {
-
-      }
     }
   }
   else
   {
+    // Perform an action when our state is constant
     b2_held = b2_state;
-
-    if (menu == HOME_MENU)
-    {
-
-    }
-    else if (menu == SETTINGS_MENU)
-    {
-
-    }
-    else if (menu == MEME_MENU)
-    {
-
-    }
   }
 
 
