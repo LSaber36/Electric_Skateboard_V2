@@ -90,11 +90,15 @@ float rScale = 0;
 
 
 #define n 100  // num readings to average
+#define HOME_SCREEN 0
+#define SETTINGS_SCREEN 1
+#define MEME_SCREEN 2
 int8_t counter = 0;
 int8_t counterFlag = 0, firstPrintFlag = 0, firstHomeRenderFlag = 0;
 int8_t firstSettingsRenderFlag = 0;
 int8_t firstMemeRenderFlag = 0;
-uint8_t menu = 0, lastMenu = 0;
+uint8_t menu = HOME_SCREEN, lastMenu = HOME_SCREEN;
+uint8_t settingsMode = 0;
 
 
 // radio data declarations (data sent and received)
@@ -903,7 +907,7 @@ void getJoystick(void)
 
 
   // settings specific to home screen
-  if (menu == 0)
+  if (menu == HOME_SCREEN)
   {
     // Assign speed a value based on throttle position
     if (throttle > 0)
@@ -1173,13 +1177,13 @@ void getJoystick(void)
       barWidthR = 0;
     }
   }
-  else if (menu == 1)
+  else if (menu == SETTINGS_SCREEN)
   {
     // No menus while moving
     speed = 0;
     throttle = 0;
   }
-  else if (menu == 2)
+  else if (menu == MEME_SCREEN)
   {
     // No menus while moving
     speed = 0;
@@ -1191,18 +1195,18 @@ void getJoystick(void)
   if (last_x_pot != x_pot)
   {
     // settings specific to home screen
-    if (menu == 0)
+    if (menu == HOME_SCREEN)
     {
       if (x_pot < 500  &&  last_x_pot > 500)
       {
         debugToggle = !debugToggle;
       }
     }
-    else if (menu == 1)
+    else if (menu == SETTINGS_SCREEN)
     {
 
     }
-    else if (menu == 2)
+    else if (menu == MEME_SCREEN)
     {
 
     }
@@ -1225,15 +1229,15 @@ void getButtons(void)
       // button being pressed
       buttonTimer = 0;
 
-      if (menu == 0)
+      if (menu == HOME_SCREEN)
       {
 
       }
-      else if (menu == 1)
+      else if (menu == SETTINGS_SCREEN)
       {
 
       }
-      else if (menu == 2)
+      else if (menu == MEME_SCREEN)
       {
 
       }
@@ -1247,10 +1251,10 @@ void getButtons(void)
       // determine what kind of press we had and act accordingly
       if (pressTime > 0  &&  pressTime <= SHORT_PRESS)
       {
-        menu = 0;
+        menu = HOME_SCREEN;
 
         // only trigger vib motor when not being used
-        if (lastMenu == 0  &&  vibFlag == 0)
+        if (lastMenu == HOME_SCREEN  &&  vibFlag == 0)
         {
           vibTimer = 0;
           vibFlag = 1;
@@ -1258,24 +1262,24 @@ void getButtons(void)
       }
       else if (pressTime <= LONG_PRESS)
       {
-        menu = 1;
+        menu = SETTINGS_SCREEN;
       }
       else
       {
         // press is EXTRA long :O
-        menu = 2;
+        menu = MEME_SCREEN;
       }
 
 
-      if (menu == 0)
+      if (menu == HOME_SCREEN)
       {
 
       }
-      else if (menu == 1)
+      else if (menu == SETTINGS_SCREEN)
       {
 
       }
-      else if (menu == 2)
+      else if (menu == MEME_SCREEN)
       {
 
       }
@@ -1285,15 +1289,15 @@ void getButtons(void)
   {
     // button state is constant
 
-    if (menu == 0)
+    if (menu == HOME_SCREEN)
     {
 
     }
-    else if (menu == 1)
+    else if (menu == SETTINGS_SCREEN)
     {
 
     }
-    else if (menu == 2)
+    else if (menu == MEME_SCREEN)
     {
 
     }
@@ -1312,7 +1316,7 @@ void getButtons(void)
     {
       // button being tapped
 
-      if (menu == 0)
+      if (menu == HOME_SCREEN)
       {
         // if the safety is enabled, set cruise to 1
         if (safety == 1  &&  throttle >= 0)
@@ -1321,11 +1325,11 @@ void getButtons(void)
           cruiseFlag = 0;
         }
       }
-      else if (menu == 1)
+      else if (menu == SETTINGS_SCREEN)
       {
 
       }
-      else if (menu == 2)
+      else if (menu == MEME_SCREEN)
       {
 
       }
@@ -1335,15 +1339,15 @@ void getButtons(void)
     {
       // button being released
 
-      if (menu == 0)
+      if (menu == HOME_SCREEN)
       {
 
       }
-      else if (menu == 1)
+      else if (menu == SETTINGS_SCREEN)
       {
 
       }
-      else if (menu == 2)
+      else if (menu == MEME_SCREEN)
       {
 
       }
@@ -1353,15 +1357,15 @@ void getButtons(void)
   {
     b2_held = b2_state;
 
-    if (menu == 0)
+    if (menu == HOME_SCREEN)
     {
 
     }
-    else if (menu == 1)
+    else if (menu == SETTINGS_SCREEN)
     {
 
     }
-    else if (menu == 2)
+    else if (menu == MEME_SCREEN)
     {
 
     }
@@ -1380,15 +1384,15 @@ void getButtons(void)
     {
       // button being tapped
 
-      if (menu == 0)
+      if (menu == HOME_SCREEN)
       {
 
       }
-      else if (menu == 1)
+      else if (menu == SETTINGS_SCREEN)
       {
 
       }
-      else if (menu == 2)
+      else if (menu == MEME_SCREEN)
       {
 
       }
@@ -1397,15 +1401,15 @@ void getButtons(void)
     {
       // button being released
 
-      if (menu == 0)
+      if (menu == HOME_SCREEN)
       {
 
       }
-      else if (menu == 1)
+      else if (menu == SETTINGS_SCREEN)
       {
 
       }
-      else if (menu == 2)
+      else if (menu == MEME_SCREEN)
       {
 
       }
@@ -1415,7 +1419,7 @@ void getButtons(void)
   {
     b3_held = b3_state;
 
-    if (menu == 0)
+    if (menu == HOME_SCREEN)
     {
       if (b3_state == 1)
       {
@@ -1427,11 +1431,11 @@ void getButtons(void)
         cruise = 0;
       }
     }
-    else if (menu == 1)
+    else if (menu == SETTINGS_SCREEN)
     {
 
     }
-    else if (menu == 2)
+    else if (menu == MEME_SCREEN)
     {
 
     }
@@ -1781,7 +1785,7 @@ void loop(void)
     pulseVib(175, 150, 30);
 
   // Menu decision-making
-  if (menu == 0)
+  if (menu == HOME_SCREEN)
   {
     // if I have switched into a new menu
     if (lastMenu != 0)
@@ -1790,7 +1794,7 @@ void loop(void)
     renderHomeScreen();
     firstHomeRenderFlag = 1;
   }
-  else if (menu == 1)
+  else if (menu == SETTINGS_SCREEN)
   {
     if (lastMenu != 1)
       firstSettingsRenderFlag = 0;
@@ -1798,7 +1802,7 @@ void loop(void)
     renderSettingsMenu();
     firstSettingsRenderFlag = 1;
   }
-  else if (menu == 2)
+  else if (menu == MEME_SCREEN)
   {
     if (lastMenu != 2)
       firstMemeRenderFlag = 0;
@@ -1808,7 +1812,7 @@ void loop(void)
   }
   else if (menu > 2)
   {
-    menu = 0;
+    menu = HOME_SCREEN;
   }
 
   // state change stuff
