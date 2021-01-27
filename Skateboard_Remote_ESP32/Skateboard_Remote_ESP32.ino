@@ -1282,6 +1282,10 @@ void getButtons(void)
         {
           menu = HOME_MENU;
         }
+        else if (menu == MEME_MENU)
+        {
+          menu = SETTINGS_MENU;
+        }
       }
       else
       {
