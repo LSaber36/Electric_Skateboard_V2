@@ -11,10 +11,12 @@
 #define BL_CHANNEL 0      // Use the first pwm channel
 #define VIB_CHANNEL 1     // Use the first pwm channel
 
-elapsedMillis buttonTimer, vibTimer;
-uint32_t pressTime = 0;
+elapsedMillis buttonTimer, vibTimer, joystickTimer;
 #define SHORT_PRESS 500
 #define LONG_PRESS 1000
+#define SHORT_HOLD SHORT_PRESS
+#define LONG_HOLD LONG_PRESS
+uint8_t joystickTimerFlag = 0;
 
 // Definitons for single bits 0 - 7
 #define BIT0 (1<<0)
@@ -41,6 +43,13 @@ int16_t last_y_pot = 0;
 #define MIDDLE 2
 #define DOWNMIN 3
 #define DOWNMAX 4
+
+// Joystick analogRead value identifiers
+#define UP_MAX_BOUND 500
+#define UP_MIN_BOUND 1200
+#define DOWN_MIN_BOUND 2700
+#define DOWN_MAX_BOUND 3400
+
 int8_t yState = 0, yStateLast = 0;
 
 // Vibrator motor declarations
@@ -156,7 +165,7 @@ uint8_t statusSend = 0;
       7
   msb
 */
-uint8_t headlightFlag = 0,  dutyFlag = 0, rpmFlag = 0, currentFlag = 0;
+uint8_t headlight = 0;
 int8_t motorCurrent = 0;  // current to send to the receiver
 int16_t skateboardVoltInt = 0;  // recieve as an int then divide by 100 and cast to float
 float skateboardVoltFloat = 0;
@@ -751,7 +760,6 @@ void renderHomeScreen(void)
     tft.print(safety);
     tft.print(":");
     tft.print(cruise);
-    // tft.print(batFlag);
 
     tft.setCursor(180, 186);
     tft.printf("%4d", speed);
@@ -884,23 +892,23 @@ void getJoystick(void)
 
 
   // set yState based on y_pot
-  if (y_pot < 500)
+  if (y_pot < UP_MAX_BOUND)
   {
     yState = UPMAX;
   }
-  else if (y_pot < 1200)
+  else if (y_pot < UP_MIN_BOUND)
   {
     yState = UPMIN;
   }
-  else if (y_pot < 2700)
+  else if (y_pot < DOWN_MIN_BOUND)
   {
     yState = MIDDLE;
   }
-  else if (y_pot <= 3400)
+  else if (y_pot < DOWN_MAX_BOUND)
   {
     yState = DOWNMIN;
   }
-  else if (y_pot <= 4000)
+  else
   {
     yState = DOWNMAX;
   }
@@ -1176,6 +1184,31 @@ void getJoystick(void)
       barWidthL = 0;
       barWidthR = 0;
     }
+
+    // toggle motor enable (flick to left)
+    if (last_x_pot != x_pot)
+    {
+      // Detect entering left position
+      if (x_pot < UP_MAX_BOUND  &&  last_x_pot > UP_MAX_BOUND)
+      {
+        debugToggle = !debugToggle;
+        joystickTimer = 0;
+        joystickTimerFlag = 0;
+      }
+    }
+
+    // Detect staying in left position
+    if (x_pot < UP_MAX_BOUND)
+    {
+      if (joystickTimer > LONG_HOLD  &&  joystickTimerFlag == 0)
+      {
+        headlight = (headlight == 0) ? 1 : 0;
+        setHeadlight(headlight);
+        joystickTimer = 0;
+        joystickTimerFlag = 1;
+      }
+    }
+
   }
   else if (menu == SETTINGS_SCREEN)
   {
@@ -1190,31 +1223,11 @@ void getJoystick(void)
     throttle = 0;
   }
 
-
-  // toggle motor enable (flick to left)
-  if (last_x_pot != x_pot)
-  {
-    // settings specific to home screen
-    if (menu == HOME_SCREEN)
-    {
-      if (x_pot < 500  &&  last_x_pot > 500)
-      {
-        debugToggle = !debugToggle;
-      }
-    }
-    else if (menu == SETTINGS_SCREEN)
-    {
-
-    }
-    else if (menu == MEME_SCREEN)
-    {
-
-    }
-  }
 }
 
 void getButtons(void)
 {
+  uint32_t pressTime = 0;
   b1_state = digitalRead(B1_PIN);
   b2_state = digitalRead(B2_PIN);
   b3_state = digitalRead(B3_PIN);
@@ -1756,7 +1769,7 @@ void loop(void)
   // printButtonData();
   // printRadioData();
 
-  // Perform action if joystick flicked to left
+  // Perform action if joystick flicked down
   // When safety off
   if (vib_toggle == 1)
   {
@@ -1767,7 +1780,7 @@ void loop(void)
 
   }
 
-  // Perform action if joystick flicked down
+  // Perform action if joystick flicked to left
   // When on home screen
   if (debugToggle == 1)
   {
