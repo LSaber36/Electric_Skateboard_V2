@@ -790,12 +790,55 @@ void renderHomeScreen(void)
 
 void renderInitialSettingsMenu(void)
 {
+  int fontHeight = tft.fontHeight();
+  int currentY, xCoord, rectWidth, rectHeight, textXOffset, padding;
+
+  // Setup the header
   tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);
   tft.fillScreen(SETTINGS_BG_COLOR);
   tft.pushImage(15, 15, 23, 21, iconBackArrow, TFT_WHITE);
   tft.setTextSize(3);
   tft.setCursor(65, 13);
   tft.print("Settings");
+
+  // Setup the setting dividers
+  // Starting values for entire list
+  currentY = 65;
+  xCoord = 4;
+  rectWidth = 232;
+  rectHeight = 2;
+  textXOffset = 10;
+  padding = 6;
+
+  // Print the setting names
+  tft.setTextSize(2);
+  tft.setCursor(xCoord + textXOffset, currentY);
+  tft.print("Brightness");
+  currentY += fontHeight + padding;
+  tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);  
+
+  currentY += padding*2;
+  tft.setCursor(xCoord + textXOffset, currentY);
+  tft.print("Intensity");
+  currentY += fontHeight + padding;
+  tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);  
+
+  currentY += padding*2;
+  tft.setCursor(xCoord + textXOffset, currentY);
+  tft.print("Sensitivity");
+  currentY += fontHeight + padding;
+  tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);  
+
+  currentY += padding*2;
+  tft.setCursor(xCoord + textXOffset, currentY);
+  tft.print("Night Mode");
+  currentY += fontHeight + padding;
+  tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);  
+
+  currentY += padding*2;
+  tft.setCursor(xCoord + textXOffset, currentY);
+  tft.print("Debug Mode");
+
 }
 
 void renderSettingsMenu(void)
