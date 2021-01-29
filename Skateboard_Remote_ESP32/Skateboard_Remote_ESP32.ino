@@ -157,6 +157,7 @@ receiver_message receiverData;
 
 int16_t mphInt = 0;
 uint8_t sendStatus = 0;
+uint8_t receiveStatus = 0;
 /*
    Settings Byte:
 
@@ -194,7 +195,7 @@ float skateboardVoltFloat = 0;
 #define LIGHT_BLUE 0x45DF
 #define LIGHT_GRAY 0xB5B6
 #define HOME_BG_COLOR 0xFDCF
-#define INDICATOR_BLUE 0x04DF
+#define INDICATOR_BLUE 0x351F
 #define SETTINGS_BG_COLOR LIGHT_GRAY
 #define MEME_BG_COLOR LIGHT_BLUE
 int16_t brightness = 1023;  // Range is [0 - 1023]
@@ -449,12 +450,17 @@ int8_t throttleTemp = 0, cruiseFlag = 0;
 // Trigger an event when we send data
 void OnDataSent(const uint8_t * mac, esp_now_send_status_t status)
 {
-
+  sendStatus = status;
 }
 
 // Process received data
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 {
+  if (len == sizeof(receiver_message))
+    receiveStatus = 0;
+  else
+    receiveStatus = 1;
+
   memcpy(&receiverData, incomingData, sizeof(receiverData));
   mphInt = receiverData.mph;
   skateboardVoltInt = receiverData.voltage;
@@ -472,11 +478,11 @@ void renderInitialHomeScreen(void)
   tft.fillScreen(HOME_BG_COLOR);
 
   // Draw the throttle indicator
-  tft.fillRect(17, 210, 2, 18, TFT_BLACK);      // Throttle left line
-  tft.fillRect(centerLeft, 210, 2, 18, TFT_BLACK); // Throttle middle line
-  tft.fillRect(221, 210, 2, 18, TFT_BLACK);     // Throttle right line
-  tft.drawRect(8, 206, 224, 26, TFT_BLACK);     // Throttle box outside
-  tft.drawRect(7, 205, 226, 28, TFT_BLACK);     // Throttle box inside
+  tft.fillRect(17, 210, 2, 18, TFT_BLACK);          // Throttle left line
+  tft.fillRect(centerLeft, 210, 2, 18, TFT_BLACK);  // Throttle middle line
+  tft.fillRect(221, 210, 2, 18, TFT_BLACK);         // Throttle right line
+  tft.drawRect(8, 206, 224, 26, TFT_BLACK);         // Throttle box outside
+  tft.drawRect(7, 205, 226, 28, TFT_BLACK);         // Throttle box inside
 
 
   // Draw the iconSkateboard
@@ -505,7 +511,7 @@ void renderInitialHomeScreen(void)
 
 
   // Draw the "MPH" unit
-  tft.setCursor(174, 140);
+  tft.setCursor(160, 127);
   tft.setTextSize(3);
   tft.print("MPH");
   tft.setTextSize(2);
@@ -775,13 +781,12 @@ void renderHomeScreen(void)
 
 
   // Connection indicator
-  if (sendStatus == 1)
+  if (sendStatus == 0  &&  receiveStatus == 0)
   {
     tft.fillCircle(18, 50, 7, INDICATOR_BLUE);
   }
   else
   {
-    sendStatus = 0;
     tft.fillCircle(18, 50, 7, HOME_BG_COLOR);
   }
 
@@ -1667,7 +1672,7 @@ void loop(void)
   }
   else
   {
-
+    
   }
 
   batPercentS = -1;
