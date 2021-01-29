@@ -761,13 +761,13 @@ void renderHomeScreen(void)
   if (SCREEN_DEBUG != 0)
   {
     tft.setCursor(15, 186);
-    tft.print(b2_clicked);
-    tft.print(":");
-    tft.print(b2_held);
-    tft.print(" ");
     tft.print(b3_clicked);
     tft.print(":");
     tft.print(b3_held);
+    tft.print(" ");
+    tft.print(b2_clicked);
+    tft.print(":");
+    tft.print(b2_held);
     tft.print("  ");
     tft.print(safety);
     tft.print(":");
