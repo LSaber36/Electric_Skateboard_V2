@@ -62,7 +62,6 @@ uint8_t vibFlag = 0;
 // Button 1 (joystick | misc)
 #define B1_PIN 21
 int8_t b1_state = 0, b1_state_last = 0;
-int8_t vib_toggle = 0;
 
 // Button 2 (top finger | cruise)
 #define B2_PIN 26
@@ -132,7 +131,6 @@ uint8_t settingsMode = 0;
    voltage:  holds read voltage of board
 */
 
-bool debugToggle = 0;
 uint8_t settings = 0;
 int32_t speed = 0;
 int32_t tempSpeed = 0;
@@ -1112,10 +1110,7 @@ void getJoystick(void)
 
       if (last_y_pot != y_pot)
       {
-        if (y_pot < 500  &&  last_y_pot > 500)
-        {
-          vib_toggle = !vib_toggle;
-        }
+        // If we need to detect changing y values
       }
     }
 
@@ -1142,7 +1137,6 @@ void getJoystick(void)
       // Detect entering left position
       if (x_pot < UP_MAX_BOUND  &&  last_x_pot > UP_MAX_BOUND)
       {
-        debugToggle = !debugToggle;
         joystickTimer = 0;
         joystickTimerFlag = 0;
       }
@@ -1453,8 +1447,6 @@ void printData(void)
   Serial.print(barWidthRight);
   Serial.print("   ");
   Serial.print(batVolt, BAT_PRECISION);
-  Serial.print("   vib_toggle:  ");
-  Serial.print(vib_toggle);
   Serial.print("   chargeState:  ");
   Serial.print(chargeState);
   Serial.print("   throttle:  ");
@@ -1634,7 +1626,6 @@ void setup(void)
 
   barWidthLeft = 0;      
   barWidthRight = 0;      
-  vib_toggle = false; 
 
   batFlag = 1;
   batteryCounter = 0;
@@ -1654,26 +1645,6 @@ void loop(void)
   // printData();
   // printButtonData();
   // printRadioData();
-
-  // Perform action if joystick flicked down when safety off
-  if (vib_toggle == 1)
-  {
-
-  }
-  else
-  {
-
-  }
-
-  // Perform action if joystick flicked to left when on home screen
-  if (debugToggle == 1)
-  {
-
-  }
-  else
-  {
-    
-  }
 
   batPercentS = -1;
 
