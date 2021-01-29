@@ -949,7 +949,7 @@ void getJoystick(void)
     {
       if (throttle != 0)
       {
-        // enableCurrent();
+      
       }
       else
       {
