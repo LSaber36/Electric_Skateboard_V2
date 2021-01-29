@@ -1208,7 +1208,7 @@ void getButtons(void)
       }
       else if (pressTime <= LONG_PRESS)
       {
-        if (menu == HOME_MENU)
+        if (menu == HOME_MENU  &&  safety == 0)
         {
           menu = SETTINGS_MENU;
         }
