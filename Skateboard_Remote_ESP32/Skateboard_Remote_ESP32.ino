@@ -196,7 +196,7 @@ float skateboardVoltFloat = 0;
 #define HOME_BG_COLOR 0xFDCF
 #define SETTINGS_BG_COLOR LIGHT_GRAY
 #define MEME_BG_COLOR LIGHT_BLUE
-int16_t bright = 1023;  // display brightness [0 - 1023]
+int16_t brightness = 1023;  // [0 - 1023]
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -448,7 +448,7 @@ int8_t throttleTemp = 0, cruiseFlag = 0;
 // Trigger an event when we send data
 void OnDataSent(const uint8_t * mac, esp_now_send_status_t status)
 {
-  // Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Failure");
+
 }
 
 // Process received data
@@ -521,7 +521,7 @@ void renderHomeScreen(void)
   // draw the skateboard battery level indicators
   if (batPercentS <= 0)
   {
-    tft.fillRect(41, 10, 58, 4, HOME_BG_COLOR);  // fill in the blank space around the message
+    tft.fillRect(41, 10, 58, 4, HOME_BG_COLOR);
     tft.fillRect(41, 30, 58, 4, HOME_BG_COLOR);
     tft.setCursor(41, 14);
     tft.print("Error");
@@ -599,13 +599,13 @@ void renderHomeScreen(void)
 
   // draw the skateboard battery info
   tft.setCursor(42, 46);
-  tft.print(batPercentS, 0);  // relate to skateboardVoltFloat
+  tft.print(batPercentS, 0); 
   tft.print("%   ");
 
   if (SCREEN_DEBUG != 0)
   {
     tft.setCursor(42, 66);
-    tft.print(skateboardVoltFloat, BAT_PRECISION);  // change this to be skateboardVoltFloat
+    tft.print(skateboardVoltFloat, BAT_PRECISION);
     tft.print("v   ");
   }
 
@@ -689,7 +689,7 @@ void renderHomeScreen(void)
     // vaild percent and plugged in
     if (chargeFlag == 1)
     {
-      // fill in the blank space around the message
+  
       tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
       tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
       tft.setCursor(163, 14);
@@ -718,24 +718,23 @@ void renderHomeScreen(void)
     // invaild percent and plugged in
     if (chargeFlag == 1)
     {
-      batPercentR = 0;  // try to fix the percent problem if above 100
+      batPercentR = 0;
 
-      tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);  // fill in the blank space around the message
-      tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);  // fill in the blank space around the message
+      tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
+      tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
       tft.setCursor(163, 14);
       tft.print("Pgrm.");
     }
     // invalid percent and not plugged in
     else
     {
-      batPercentR = 0;  // try to fix the percent problem if above 100
+      batPercentR = 0;
 
-      // fill in the blank space around the message
       tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
       tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
       tft.setCursor(163, 14);
 
-      // weird delay between 1st average complete and 1st print performed
+      // delay between 1st average complete and 1st print performed
       if (counterFlag == 0  &&  firstPrintFlag == 0)  // if before 1st average and 1st print
       {
         tft.print("Read.");
@@ -754,7 +753,6 @@ void renderHomeScreen(void)
   tft.printf("%-2d", mphInt);
   tft.setTextSize(2);
 
-  // debugging info
   if (SCREEN_DEBUG != 0)
   {
     tft.setCursor(15, 186);
@@ -885,7 +883,6 @@ void renderInitialMemeMenu(void)
   tft.pushImage(10, 77, 220, 147, peanut);
 }
 
-// Show the meme
 void renderMemeMenu(void)
 {
   // only print certain parts of screen once (for optimization)
@@ -929,67 +926,16 @@ void getJoystick(void)
     // Assign speed a value based on throttle position
     if (throttle > 0)
     {
-      // Calculate tempSpeed
-      // Current calculation
-      /*
-      if (throttle <= 20)
-      {
-        tempSpeed = MAX_CURRENT / NUM_STEPS;  // 1/5
-      }
-      else if (throttle <= 40)
-      {
-        tempSpeed = (MAX_CURRENT * 2) / NUM_STEPS;  // 2/5
-      }
-      else if (throttle <= 60)
-      {
-        tempSpeed = (MAX_CURRENT * 3) / NUM_STEPS;  // 3/5
-      }
-      else if (throttle <= 80)
-      {
-        tempSpeed = (MAX_CURRENT * 4) / NUM_STEPS;  // 4/5
-      }
-      else if (throttle <= 100)
-      {
-        tempSpeed = MAX_CURRENT;  // 5/5
-      }
-      */
-
       enableRpm();
       tempSpeed = map(throttle, 0, 100, 800, MAX_RPM);
     }
     else if (throttle < 0)
     {
-      // Calculate tempSpeed
-      // Current calculation
-      /*
-      if (throttle >= -20)
-      {
-        tempSpeed = MAX_BRAKE_CURRENT / NUM_STEPS;  // 1/5
-      }
-      else if (throttle >= -40)
-      {
-        tempSpeed = (MAX_BRAKE_CURRENT * 2) / NUM_STEPS;  // 2/5
-      }
-      else if (throttle >= -60)
-      {
-        tempSpeed = (MAX_BRAKE_CURRENT * 3) / NUM_STEPS;  // 3/5
-      }
-      else if (throttle >= -80)
-      {
-        tempSpeed = (MAX_BRAKE_CURRENT * 4) / NUM_STEPS;  // 4/5
-      }
-      else if (throttle >= -100)
-      {
-        tempSpeed = MAX_BRAKE_CURRENT;  // 5/5
-      }
-      */
-
       enableCurrent();
       tempSpeed = map(throttle, 0, -100, 0, MAX_BRAKE_CURRENT);
     }
     else if (throttle == 0)
     {
-      // Calculate tempSpeed
       disableMotor();
       tempSpeed = 0;
     }
@@ -1081,7 +1027,8 @@ void getJoystick(void)
 
           break;
 
-          default:  // if there is an invalid state, cut throttle
+          // if there is an invalid state, cut throttle
+          default:  
             throttle = 0;
           break;
         }
@@ -1493,7 +1440,6 @@ void getBattery(void)
     else if (counter > n)
     {
       avgSensorVolt = (total / n) + adjust;
-      // batVolt = ( avgSensorVolt / (.6631) ) + adjust; // .6631 is the R2/(R1 + R2) value
       batVolt = (avgSensorVolt * rScale) + batVoltOffset; // rScale is the (R1 + R2)/R2 value
       // for the voltage divider, batVolt is like the Vin and avgSensorVolt is like Vout
       total = 0;
@@ -1523,10 +1469,6 @@ void printData(void)
   Serial.print(vib_toggle);
   Serial.print("   chargeState:  ");
   Serial.print(chargeState);
-  // Serial.print("   batFlag:  ");
-  // Serial.print(batFlag);
-  // Serial.print("   batPercentR:  ");
-  // Serial.print(batPercentR);
   Serial.print("   throttle:  ");
   Serial.print(throttle);
   Serial.print("   X:   ");
@@ -1675,7 +1617,6 @@ void setup(void)
   }
 
   Serial.println("Radio init successful");
-  // delay(500);
 
   esp_now_register_recv_cb(OnDataRecv);
   esp_now_register_send_cb(OnDataSent);
@@ -1692,7 +1633,6 @@ void setup(void)
   }
 
   Serial.println("Add peer successful");
-  // delay(500);
 
 
   ledcSetup(BL_CHANNEL, FREQ, RESOLUTION);
@@ -1701,15 +1641,15 @@ void setup(void)
   ledcSetup(VIB_CHANNEL, FREQ, RESOLUTION);
   ledcAttachPin(VIB_PIN, VIB_CHANNEL);
 
-  ledcWrite(BL_CHANNEL, bright);  // between 0 and 1023 with the 10 bit resolution
+  ledcWrite(BL_CHANNEL, brightness);  // between 0 and 1023 with the 10 bit resolution
 
   analogReadResolution(12);
 
   disableMotor();
 
-  barWidthL = 0;  // make display left bar start as 0
-  barWidthR = 0;  // make display right bar start as 0
-  vib_toggle = false;  // make vib motor start as off
+  barWidthL = 0;        // make display left bar start as 0
+  barWidthR = 0;        // make display right bar start as 0
+  vib_toggle = false;   // make vib motor start as off
 
   batFlag = 1;
   counter = 0;
@@ -1718,7 +1658,6 @@ void setup(void)
   rScale = ((float)R1 + R2) / R2;
 
   Serial.println("Ready");
-  // delay(1000);
 }
 
 void loop(void)

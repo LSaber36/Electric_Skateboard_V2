@@ -65,6 +65,7 @@ typedef struct receiver_message
 // DEVKIT V1 Remote    7C:9E:BD:F3:50:DC
 // Standalone Remote   F0:08:D1:D1:6F:18
 
+// Testing
 // uint8_t broadcastAddress[] = {0x7C, 0x9E, 0xBD, 0xF3, 0x50, 0xDC};
 uint8_t broadcastAddress[] = {0xF0, 0x08, 0xD1, 0xD1, 0x6F, 0x18};
 
@@ -88,7 +89,7 @@ uint8_t settingEnable = 0;
 // Trigger an event when we send data
 void OnDataSent(const uint8_t * mac, esp_now_send_status_t status)
 {
-  // Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Failure");
+
 }
 
 // Process received data
@@ -297,9 +298,10 @@ void setup()
 void loop()
 {
   getVescData();
-  // Test values
+  // Testing
   mphInt = 10;
   skateboardVoltInt = 12;
+
   // printRadioData();
   // printBatteryData();
   printVescData();
@@ -309,7 +311,7 @@ void loop()
   if (settingEnable == 1)  // motor is enabled
   {
     digitalWrite(GREEN, HIGH);
-    // we'll have this for using the motor only when it's okay to
+    // we'll have this indicate when the motor is okay to use
     if (currentFlag == 1)
     {
       if (speed > 0)
