@@ -50,17 +50,17 @@ settings byte
 */
 
 // Radio hardware definitions
-typedef struct sender_message
+typedef struct senderMessage
 {
   uint16_t mph;
   uint16_t voltage;
-}sender_message;
+}senderMessage;
 
-typedef struct receiver_message
+typedef struct receiverMessage
 {
   uint8_t settings;
   uint32_t speed;
-}receiver_message;
+}receiverMessage;
 
 // DEVKIT V1 Remote    7C:9E:BD:F3:50:DC
 // Standalone Remote   F0:08:D1:D1:6F:18
@@ -69,8 +69,8 @@ typedef struct receiver_message
 // uint8_t broadcastAddress[] = {0x7C, 0x9E, 0xBD, 0xF3, 0x50, 0xDC};
 uint8_t broadcastAddress[] = {0xF0, 0x08, 0xD1, 0xD1, 0x6F, 0x18};
 
-sender_message senderData;
-receiver_message receiverData;
+senderMessage senderData;
+receiverMessage receiverData;
 
 uint8_t headlightFlag = 0, dutyFlag = 0, rpmFlag = 0, currentFlag = 0;
 

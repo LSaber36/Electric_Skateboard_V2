@@ -137,21 +137,21 @@ int32_t tempSpeed = 0;
 int8_t throttle;
 
 // Radio hardware definitions
-typedef struct sender_message
+typedef struct senderMessage
 {
   uint8_t settings;
   uint32_t speed;
-}sender_message;
+}senderMessage;
 
-typedef struct receiver_message
+typedef struct receiverMessage
 {
   uint16_t mph;
   uint16_t voltage;
-}receiver_message;
+}receiverMessage;
 
 uint8_t broadcastAddress[] = {0xAC, 0x67, 0xB2, 0x31, 0x9A, 0xF0};
-sender_message senderData;
-receiver_message receiverData;
+senderMessage senderData;
+receiverMessage receiverData;
 
 int16_t mphInt = 0;
 uint8_t sendStatus = 0;
@@ -454,7 +454,7 @@ void OnDataSent(const uint8_t * mac, esp_now_send_status_t status)
 // Process received data
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 {
-  if (len == sizeof(receiver_message))
+  if (len == sizeof(receiverMessage))
     receiveStatus = 0;
   else
     receiveStatus = 1;
