@@ -1702,7 +1702,7 @@ void loop(void)
   if (menu == HOME_MENU)
   {
     // if I have switched into a new menu
-    if (lastMenu != 0)
+    if (lastMenu != HOME_MENU)
       firstHomeRenderFlag = 0;
 
     renderHomeScreen();
@@ -1710,7 +1710,7 @@ void loop(void)
   }
   else if (menu == SETTINGS_MENU)
   {
-    if (lastMenu != 1)
+    if (lastMenu != SETTINGS_MENU)
       firstSettingsRenderFlag = 0;
 
     renderSettingsMenu();
@@ -1718,14 +1718,15 @@ void loop(void)
   }
   else if (menu == MEME_MENU)
   {
-    if (lastMenu != 2)
+    if (lastMenu != MEME_MENU)
       firstMemeRenderFlag = 0;
 
     renderMemeMenu();
     firstMemeRenderFlag = 1;
   }
-  else if (menu > 2)
+  else
   {
+    // in case we get any unexpected values
     menu = HOME_MENU;
   }
 
