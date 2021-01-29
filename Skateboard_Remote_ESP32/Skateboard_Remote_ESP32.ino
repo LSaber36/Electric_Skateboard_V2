@@ -54,22 +54,22 @@ int8_t yState = 0, yStateLast = 0;
 
 // Vibrator motor declarations
 #define VIB_PIN 13
-int16_t intensity = 500;  // vibrator strength [0 - 1023]
+int16_t intensity = 500;  // Vibrator strength [0 - 1023]
 uint8_t vibFlag = 0;
 
 // Button declarations
 //*** Careful, these pins are the input-only pins that are wonky ***
-// Button 1 (joystick button), misc button
+// Button 1 (joystick | misc)
 #define B1_PIN 21
 int8_t b1_state = 0, b1_state_last = 0;
 int8_t vib_toggle = 0;
 
-// Button 2 (top finger button), cruise button
+// Button 2 (top finger | cruise)
 #define B2_PIN 26
 int8_t b2_state = 0, b2_state_last = 0;
 int8_t b2_clicked = 0, b2_held = 0;
 
-// Button 3 (bottom finger button), enable button
+// Button 3 (bottom finger button | enable)
 #define B3_PIN 27
 int8_t b3_state = 0, b3_state_last = 0;
 int8_t b3_clicked = 0, b3_held = 0;
@@ -83,10 +83,10 @@ int8_t safety = 0, cruise = 0;
 int16_t chargeState = 0;
 int8_t chargeFlag = 0;
 int8_t batFlag = 0;
-float batRead = 0;  // raw read value from the sensor
+float batRead = 0;  // Raw read value from the sensor
 float sensorVolt = 0, adjust = -.03, batPercentR, batPercentS;
 float total = 0, avgSensorVolt = 0, batVolt = 0, batVoltOffset = .095;  // .125;
-float rScale = 0;
+float resistorCoefficient = 0;
 #define BAT_MIN 2.5
 #define BAT_MAX 4.02
 #define R1 1.0050
@@ -98,7 +98,7 @@ float rScale = 0;
 */
 
 
-#define n 100  // num readings to average
+#define NUM_READINGS 100  // Number of readings to average
 
 // Menu identifiers
 #define HOME_MENU 0
@@ -111,15 +111,15 @@ float rScale = 0;
 #define SENSITIVITY_MODE 2
 #define NIGHT_MODE 3
 #define DEBUG_MODE 4
-int8_t counter = 0;
-int8_t counterFlag = 0, firstPrintFlag = 0, firstHomeRenderFlag = 0;
+int8_t batteryCounter = 0;
+int8_t initialAverageFlag = 0, firstPrintFlag = 0, firstHomeRenderFlag = 0;
 int8_t firstSettingsRenderFlag = 0;
 int8_t firstMemeRenderFlag = 0;
 uint8_t menu = HOME_MENU, lastMenu = HOME_MENU;
 uint8_t settingsMode = 0;
 
 
-// radio data declarations (data sent and received)
+// Radio data declarations (data sent and received)
 /* Remote Data
    ===========
    settings: will hold headlight, 3 sending types, other data
@@ -156,7 +156,7 @@ sender_message senderData;
 receiver_message receiverData;
 
 int16_t mphInt = 0;
-uint8_t statusSend = 0;
+uint8_t sendStatus = 0;
 /*
    Settings Byte:
 
@@ -175,8 +175,8 @@ uint8_t statusSend = 0;
   msb
 */
 uint8_t headlight = 0;
-int8_t motorCurrent = 0;  // current to send to the receiver
-int16_t skateboardVoltInt = 0;  // recieve as an int then divide by 100 and cast to float
+int8_t motorCurrent = 0;  // Current to send to the receiver
+int16_t skateboardVoltInt = 0;  // Recieve as an int then divide by 100 and cast to float
 float skateboardVoltFloat = 0;
 
 
@@ -188,19 +188,20 @@ float skateboardVoltFloat = 0;
 #define MAX_RPM 5500
 
 
-// Screen debugging info: 0 is off and nonzero is on
+// Screen debugging: 0 is off and nonzero is on
 #define SCREEN_DEBUG 1
 
 #define LIGHT_BLUE 0x45DF
 #define LIGHT_GRAY 0xB5B6
 #define HOME_BG_COLOR 0xFDCF
+#define INDICATOR_BLUE 0x04DF
 #define SETTINGS_BG_COLOR LIGHT_GRAY
 #define MEME_BG_COLOR LIGHT_BLUE
-int16_t brightness = 1023;  // [0 - 1023]
+int16_t brightness = 1023;  // Range is [0 - 1023]
 
 TFT_eSPI tft = TFT_eSPI();
 
-const uint16_t iconS [] PROGMEM =
+const uint16_t iconSkateboard [] PROGMEM =
 {
   0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
   0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff,
@@ -230,7 +231,7 @@ const uint16_t iconS [] PROGMEM =
   0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff
 };
 
-const uint16_t iconR [] PROGMEM =
+const uint16_t iconRemote [] PROGMEM =
 {
   0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
   0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
@@ -438,11 +439,11 @@ const uint16_t peanut [] PROGMEM =
 
 
 // Make positioning data for the display
-int8_t barWidthL, barWidthR;
-int8_t centerL = 119;
-int8_t centerR = centerL + 1;
-int8_t endL = 8;
-int8_t endR = 232;
+int8_t barWidthLeft, barWidthRight;
+int8_t centerLeft = 119;
+int8_t centerRight = centerLeft + 1;
+int8_t endLeft = 8;
+int8_t endRight = 232;
 int8_t throttleTemp = 0, cruiseFlag = 0;
 
 // Trigger an event when we send data
@@ -470,40 +471,40 @@ void renderInitialHomeScreen(void)
 {
   tft.fillScreen(HOME_BG_COLOR);
 
-  // draw the throttle indicator (may need a redesign)
-  tft.fillRect(17, 210, 2, 18, TFT_BLACK);      // throttle left line
-  tft.fillRect(centerL, 210, 2, 18, TFT_BLACK); // throttle middle line
-  tft.fillRect(221, 210, 2, 18, TFT_BLACK);     // throttle right line
-  tft.drawRect(8, 206, 224, 26, TFT_BLACK);     // throttle box outside
-  tft.drawRect(7, 205, 226, 28, TFT_BLACK);     // throttle box inside
+  // Draw the throttle indicator
+  tft.fillRect(17, 210, 2, 18, TFT_BLACK);      // Throttle left line
+  tft.fillRect(centerLeft, 210, 2, 18, TFT_BLACK); // Throttle middle line
+  tft.fillRect(221, 210, 2, 18, TFT_BLACK);     // Throttle right line
+  tft.drawRect(8, 206, 224, 26, TFT_BLACK);     // Throttle box outside
+  tft.drawRect(7, 205, 226, 28, TFT_BLACK);     // Throttle box inside
 
 
-  // draw the icons
-  // the last argument of pushImage makes that color transparent
-  tft.pushImage(5, 10, 26, 26, iconS, TFT_WHITE);
-  tft.pushImage(127, 10, 26, 26, iconR, TFT_WHITE);
+  // Draw the iconSkateboard
+  // The last argument of pushImage makes that color transparent
+  tft.pushImage(5, 10, 26, 26, iconSkateboard, TFT_WHITE);
+  tft.pushImage(127, 10, 26, 26, iconRemote, TFT_WHITE);
 
 
-  // skateboard battery body
+  // Skateboard battery body
   tft.drawRoundRect(37, 7, 65, 30, 4, TFT_BLACK);
   tft.drawRoundRect(36, 6, 67, 32, 4, TFT_BLACK);
   tft.drawRoundRect(36, 6, 67, 32, 6, TFT_BLACK);
-  // skateboard battery nipple
+  // Skateboard battery nipple
   tft.drawRoundRect(102, 14, 6, 16, 1, TFT_BLACK);
   tft.drawRoundRect(102, 13, 7, 18, 1, TFT_BLACK);
   tft.drawRoundRect(102, 13, 7, 18, 3, TFT_BLACK);
 
-  // remote battery body
+  // Remote battery body
   tft.drawRoundRect(159, 7, 65, 30, 4, TFT_BLACK);
   tft.drawRoundRect(158, 6, 67, 32, 4, TFT_BLACK);
   tft.drawRoundRect(158, 6, 67, 32, 6, TFT_BLACK);
-  // remote battery nipple
+  // Remote battery nipple
   tft.drawRoundRect(224, 14, 6, 16, 1, TFT_BLACK);
   tft.drawRoundRect(224, 13, 7, 18, 1, TFT_BLACK);
   tft.drawRoundRect(224, 13, 7, 18, 3, TFT_BLACK);
 
 
-  // draw the "MPH" unit
+  // Draw the "MPH" unit
   tft.setCursor(174, 140);
   tft.setTextSize(3);
   tft.print("MPH");
@@ -514,11 +515,11 @@ void renderHomeScreen(void)
 {
   tft.setTextColor(TFT_BLACK, HOME_BG_COLOR);
 
-  // only print certain parts of screen once (for optimization)
+  // Only print certain parts of screen once (for optimization)
   if (firstHomeRenderFlag == 0)
     renderInitialHomeScreen();
 
-  // draw the skateboard battery level indicators
+  // Draw the skateboard battery level indicators
   if (batPercentS <= 0)
   {
     tft.fillRect(41, 10, 58, 4, HOME_BG_COLOR);
@@ -593,11 +594,11 @@ void renderHomeScreen(void)
   }
   else
   {
-    // then there is an invalid percent value
+    // If there is an invalid percent value
   }
 
 
-  // draw the skateboard battery info
+  // Draw the skateboard battery info
   tft.setCursor(42, 46);
   tft.print(batPercentS, 0); 
   tft.print("%   ");
@@ -609,11 +610,11 @@ void renderHomeScreen(void)
     tft.print("v   ");
   }
 
-  // battery percent is valid and not plugged in
+  // Battery percent is valid and not plugged in
   if ( (batPercentR > 0  &&  batPercentR <= 100)  &&  chargeFlag == 0)
   {
     firstPrintFlag = 1;
-    // specific valid percent ranges
+    // Specific valid percent ranges
     if (batPercentR <= 20)
     {
       tft.fillRect(163, 10, 9, 24, TFT_RED);
@@ -682,11 +683,11 @@ void renderHomeScreen(void)
   }
 
 
-  // draw the remote battery info
-  // battery percent is valid
+  // Draw the remote battery info
+  // Battery percent is valid
   if (batPercentR > 0  &&  batPercentR <= 100)
   {
-    // vaild percent and plugged in
+    // Vaild percent and plugged in
     if (chargeFlag == 1)
     {
   
@@ -695,10 +696,10 @@ void renderHomeScreen(void)
       tft.setCursor(163, 14);
       tft.print("Chrg.");
     }
-    // vaild percent and not plugged in
+    // Vaild percent and not plugged in
     else
     {
-      // draw the remote battery calculated voltage
+      // Draw the remote battery calculated voltage
       tft.setCursor(164, 46);
       tft.print(batPercentR, 0);
       tft.print("%   ");
@@ -712,10 +713,10 @@ void renderHomeScreen(void)
 
     }
   }
-  // battery percent is invalid
+  // Battery percent is invalid
   else
   {
-    // invaild percent and plugged in
+    // Invaild percent and plugged in
     if (chargeFlag == 1)
     {
       batPercentR = 0;
@@ -725,7 +726,7 @@ void renderHomeScreen(void)
       tft.setCursor(163, 14);
       tft.print("Pgrm.");
     }
-    // invalid percent and not plugged in
+    // Invalid percent and not plugged in
     else
     {
       batPercentR = 0;
@@ -734,12 +735,12 @@ void renderHomeScreen(void)
       tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
       tft.setCursor(163, 14);
 
-      // delay between 1st average complete and 1st print performed
-      if (counterFlag == 0  &&  firstPrintFlag == 0)  // if before 1st average and 1st print
+      // Delay between 1st average complete and 1st print performed
+      if (initialAverageFlag == 0  &&  firstPrintFlag == 0)  // If before 1st average and 1st print
       {
         tft.print("Read.");
       }
-      else if (counterFlag == 1  &&  firstPrintFlag == 1)  // if after 1st average and 1st print
+      else if (initialAverageFlag == 1  &&  firstPrintFlag == 1)  // If after 1st average and 1st print
       {
         tft.print("Error");
       }
@@ -747,7 +748,7 @@ void renderHomeScreen(void)
   }
 
 
-  // draw the speed value
+  // Draw the speed value
   tft.setCursor(25, 100);
   tft.setTextSize(9);
   tft.printf("%-2d", mphInt);
@@ -773,37 +774,37 @@ void renderHomeScreen(void)
   }
 
 
-  // connection indicator
-  if (statusSend == 1)
+  // Connection indicator
+  if (sendStatus == 1)
   {
-    tft.fillCircle(18, 50, 7, 0x04DF);  // Blue color
+    tft.fillCircle(18, 50, 7, INDICATOR_BLUE);
   }
   else
   {
-    statusSend = 0;
+    sendStatus = 0;
     tft.fillCircle(18, 50, 7, HOME_BG_COLOR);
   }
 
 
-  // draw the changing indicator bars (must be done from left to right)
-  if (barWidthR >= 1)  // width of the throttle bar
+  // Draw the changing indicator bars (must be done from left to right)
+  if (barWidthRight >= 1)  // Width of the throttle bar
   {
-    tft.fillRect(centerR + 1, 210, barWidthR, 18, TFT_GREEN);
+    tft.fillRect(centerRight + 1, 210, barWidthRight, 18, TFT_GREEN);
   }
 
-  if ((100 - barWidthR) >= 1)  // width of the throttle cover up bar
+  if ((100 - barWidthRight) >= 1)  // Width of the throttle cover up bar
   {
-    tft.fillRect(centerR + 1 + barWidthR, 209, 100 - barWidthR, 20, HOME_BG_COLOR);
+    tft.fillRect(centerRight + 1 + barWidthRight, 209, 100 - barWidthRight, 20, HOME_BG_COLOR);
   }
 
-  if ((100 - barWidthL) >= 1)  // width of the brake cover up bar
+  if ((100 - barWidthLeft) >= 1)  // Width of the brake cover up bar
   {
-    tft.fillRect(centerL - 100, 209, 100 - barWidthL, 20, HOME_BG_COLOR);
+    tft.fillRect(centerLeft - 100, 209, 100 - barWidthLeft, 20, HOME_BG_COLOR);
   }
 
-  if (barWidthL >= 1)
+  if (barWidthLeft >= 1)
   {
-    tft.fillRect(centerL - barWidthL, 210, barWidthL, 18, TFT_RED);
+    tft.fillRect(centerLeft - barWidthLeft, 210, barWidthLeft, 18, TFT_RED);
   }
 }
 
@@ -862,7 +863,7 @@ void renderInitialSettingsMenu(void)
 
 void renderSettingsMenu(void)
 {
-  // only print certain parts of screen once (for optimization)
+  // Only print certain parts of screen once (for optimization)
   if (firstSettingsRenderFlag == 0)
     renderInitialSettingsMenu();
 }
@@ -885,7 +886,7 @@ void renderInitialMemeMenu(void)
 
 void renderMemeMenu(void)
 {
-  // only print certain parts of screen once (for optimization)
+  // Only print certain parts of screen once (for optimization)
   if (firstMemeRenderFlag == 0)
     renderInitialMemeMenu();
 
@@ -897,7 +898,7 @@ void getJoystick(void)
   y_pot = analogRead(Y_POT_PIN);
 
 
-  // set yState based on y_pot
+  // Set yState based on y_pot
   if (y_pot < UP_MAX_BOUND)
   {
     yState = UPMAX;
@@ -920,7 +921,7 @@ void getJoystick(void)
   }
 
 
-  // settings specific to home screen
+  // Settings specific to home screen
   if (menu == HOME_MENU)
   {
     // Assign speed a value based on throttle position
@@ -940,7 +941,7 @@ void getJoystick(void)
       tempSpeed = 0;
     }
 
-    // control the throttle behavior
+    // Determine the throttle behavior
     if (safety == 1)
     {
       if (throttle != 0)
@@ -948,19 +949,20 @@ void getJoystick(void)
         // enableCurrent();
       }
       else
+      {
         disableMotor();
+      }
 
-      if (cruise == 0)  // if cruise is off
+      if (cruise == 0)
       {
         switch (yState)
         {
-          case 0:  // up max
-
-            if (throttle < 97  &&  throttle >= 0)  // add 3 but don't excede 100
+          case 0:  // Up max
+            if (throttle < 97  &&  throttle >= 0)  // Add 3 but don't excede 100
             {
               throttle += 3;
             }
-            else if (throttle < 100  &&  throttle >= 0)  // add 1 to cover the rest
+            else if (throttle < 100  &&  throttle >= 0)  // Add 1 to not overshoot throttle indicator
             {
               throttle ++;
             }
@@ -971,9 +973,8 @@ void getJoystick(void)
 
           break;
 
-          case 1:  // up min
-
-            if (throttle < 100  &&  throttle >= 0)  // bound throttle to 100
+          case 1:  // Up min
+            if (throttle < 100  &&  throttle >= 0)  // Bound throttle to 100
             {
               throttle ++;
             }
@@ -984,8 +985,7 @@ void getJoystick(void)
 
           break;
 
-          case 2:  // neutral
-
+          case 2:  // Neutral
             if (throttle > 0)
             {
               throttle --;
@@ -997,9 +997,8 @@ void getJoystick(void)
 
           break;
 
-          case 3:  // down min
-
-            if (throttle > -100  &&  throttle <= 0)  // bound throttle to -100
+          case 3:  // Down min
+            if (throttle > -100  &&  throttle <= 0)  // Bound throttle to -100
             {
               throttle --;
             }
@@ -1010,13 +1009,12 @@ void getJoystick(void)
 
           break;
 
-          case 4:  // down max
-
-            if (throttle > -97  &&  throttle <= 0)  // subtract 3 but don't excede -100
+          case 4:  // Down max
+            if (throttle > -97  &&  throttle <= 0)  // Subtract 3 but don't excede -100
             {
               throttle -= 3;
             }
-            else if (throttle > -100  &&  throttle <= 0)  // subtract 1 to cover the rest
+            else if (throttle > -100  &&  throttle <= 0)  // Subtract 1 to not overshoot throttle indicator
             {
               throttle --;
             }
@@ -1027,8 +1025,7 @@ void getJoystick(void)
 
           break;
 
-          // if there is an invalid state, cut throttle
-          default:  
+          default:  // Invalid state, disable throttle
             throttle = 0;
           break;
         }
@@ -1036,45 +1033,38 @@ void getJoystick(void)
         // Set the speed value based on the calculations
         speed = tempSpeed;
       }
-      else if (cruise == 1)  // if cruise is on get throttle and hold
+      else if (cruise == 1)  // If cruise is on get throttle (once) and hold
       {
         if (cruiseFlag == 0)
         {
-          // if we just changed from cruise being off to being on
-          // record throttle into throttleTemp (just once)
           throttleTemp = throttle;
           cruiseFlag = 1;
         }
 
         switch (yState)
         {
-          case 0:  // up max
-
-            // increase the throttle (more)
-            if (throttle < 97  &&  throttle >= 0)  // add 3 but don't excede 100
+          case 0:  // Up max
+            // Increase the throttle (more)
+            if (throttle < 97  &&  throttle >= 0)  // Add 3 but don't excede 100
             {
               throttle += 3;
             }
-            else if (throttle < 100  &&  throttle >= 0)  // add 1 to cover the rest
+            else if (throttle < 100  &&  throttle >= 0)  // Add 1 to not overshoot throttle indicator
             {
               throttle ++;
             }
 
           break;
 
-          case 1:  // up min
-
-            // increase the throttle (less)
-            if (throttle < 100  &&  throttle >= 0)  // add 1 to cover the rest
+          case 1:  // Up min
+            if (throttle < 100  &&  throttle >= 0)  // Add 1 to not overshoot throttle indicator
             {
               throttle ++;
             }
 
           break;
 
-          case 2:  // neutral
-
-            // decrease the throttle as long as it's greater than the temp
+          case 2:  // Neutral
             if (throttle > throttleTemp)
             {
               throttle--;
@@ -1082,26 +1072,26 @@ void getJoystick(void)
 
           break;
 
-          case 3:  // down min
+          case 3:  // Down min
             cruise = 0;
           break;
 
-          case 4:  // down max
+          case 4:  // Down max
             cruise = 0;
           break;
 
-          default:  // if there is an invalid state, cut throttle
+          default:  // Invalid state, disable throttle
             throttle = 0;
           break;
         }
 
-        // Set the speed value based on the calculations
         speed = tempSpeed;
       }
     }
     else if (safety == 0)
     {
-      if (throttle > 0)  // slow down if safety off
+      // Slow down if safety off
+      if (throttle > 0)  
       {
         throttle --;
       }
@@ -1125,23 +1115,23 @@ void getJoystick(void)
     }
 
     // Set barWidths
-    if (throttle < 0)  // braking
+    if (throttle < 0)  // Braking
     {
-      barWidthL = throttle * -1;
-      barWidthR = 0;
+      barWidthLeft = throttle * -1;
+      barWidthRight = 0;
     }
-    else if (throttle > 0)  // accelerating
+    else if (throttle > 0)  // Accelerating
     {
-      barWidthR = throttle;
-      barWidthL = 0;
+      barWidthRight = throttle;
+      barWidthLeft = 0;
     }
     else if (throttle == 0)
     {
-      barWidthL = 0;
-      barWidthR = 0;
+      barWidthLeft = 0;
+      barWidthRight = 0;
     }
 
-    // toggle motor enable (flick to left)
+    // When joystick flicked to left
     if (last_x_pot != x_pot)
     {
       // Detect entering left position
@@ -1164,7 +1154,6 @@ void getJoystick(void)
         joystickTimerFlag = 1;
       }
     }
-
   }
   else if (menu == SETTINGS_MENU)
   {
@@ -1178,7 +1167,6 @@ void getJoystick(void)
     speed = 0;
     throttle = 0;
   }
-
 }
 
 void getButtons(void)
@@ -1189,18 +1177,18 @@ void getButtons(void)
   b3_state = digitalRead(B3_PIN);
 
 
-  // button 1 (the joystick)
+  // Button 1 (the joystick)
   if (b1_state_last != b1_state)
   {
-    // button state is changing
+    // Button state is changing
     if (b1_state == 1)
     {
-      // button being pressed
+      // Button being pressed
       buttonTimer = 0;
     }
     else
     {
-      // button being released
+      // Button being released
       pressTime = buttonTimer;
       buttonTimer = 0;
 
@@ -1212,7 +1200,7 @@ void getButtons(void)
           menu = HOME_MENU;
         }
 
-        // only trigger vib motor when not being used
+        // Only trigger vib motor when not being used
         if (menu == HOME_MENU  &&  lastMenu == HOME_MENU  &&  vibFlag == 0)
         {
           vibTimer = 0;
@@ -1236,7 +1224,7 @@ void getButtons(void)
       }
       else
       {
-        // press is EXTRA long
+        // Press is EXTRA long
         if (menu == SETTINGS_MENU)
         {
           menu = MEME_MENU;
@@ -1246,26 +1234,24 @@ void getButtons(void)
   }
   else
   {
-    // button state is constant
+    // Button state is constant
     // Perform an action after a period of time WITHOUT releasing the button
   }
 
 
-  // button 2 (1st finger button)
-  // cruise
+  // Button 2 (1st finger button | Cruise)
   if (b2_state_last != b2_state)
   {
-    // button state is changing
+    // Button state is changing
 
     b2_clicked = b2_state;
 
     if (b2_state == 1)
     {
-      // button being tapped
+      // Button being tapped
 
       if (menu == HOME_MENU)
       {
-        // if the safety is enabled, set cruise to 1
         if (safety == 1  &&  throttle >= 0)
         {
           cruise = 1;
@@ -1284,7 +1270,7 @@ void getButtons(void)
     }
     else
     {
-      // button being released
+      // Button being released
     }
   }
   else
@@ -1294,17 +1280,16 @@ void getButtons(void)
   }
 
 
-  // button 3 (2nd finger button)
-  // safety
+  // Button 3 (2nd finger button | Safety)
   if (b3_state_last != b3_state)
   {
-    // button state is changing
+    // Button state is changing
 
     b3_clicked = b3_state;
 
     if (b3_state == 1)
     {
-      // button being tapped
+      // Button being tapped
 
       if (menu == HOME_MENU)
       {
@@ -1321,7 +1306,7 @@ void getButtons(void)
     }
     else
     {
-      // button being released
+      // Button being released
 
       if (menu == HOME_MENU)
       {
@@ -1364,7 +1349,6 @@ void getButtons(void)
   }
 }
 
-// Collection of timings for the vibrator motor
 void pulseVib(uint16_t pulseTime, uint16_t betweenPulseTime, uint8_t percent)
 {
   uint16_t vibIntensity = 0;
@@ -1372,14 +1356,12 @@ void pulseVib(uint16_t pulseTime, uint16_t betweenPulseTime, uint8_t percent)
   uint32_t timeB = timeA + betweenPulseTime;
   uint32_t timeC = timeB + pulseTime;
 
-  // only map vibIntensity if valid percent, otherwise it is 0
   if (percent >= 0  &&  percent <= 100)
   {
     vibIntensity = map(percent, 0, 100, 0, 1023);
   }
 
 
-  // Buzzer timings
   if (vibTimer > 0  &&  vibTimer <= timeA)
   {
     batFlag = 0;
@@ -1401,7 +1383,6 @@ void pulseVib(uint16_t pulseTime, uint16_t betweenPulseTime, uint8_t percent)
   }
 }
 
-// Read the battery and calculate the average voltage
 void getBattery(void)
 {
   chargeState = analogRead(CHARGE_PIN);
@@ -1417,41 +1398,43 @@ void getBattery(void)
 
   if (batFlag == 1  &&  chargeFlag == 0)
   {
+    // NOTE: using a 12 bit reading resolution
     batRead = analogRead(BATTERY_PIN);
     batRead = analogRead(BATTERY_PIN);
-    sensorVolt = mapFloat(batRead, 0, 4095, 0, 3.3);  // NOTE: using a 12 bit reading resolution
+    sensorVolt = mapFloat(batRead, 0, 4095, 0, 3.3);
 
     if (batRead <= 0)
     {
-      counter = 0;
+      batteryCounter = 0;
       avgSensorVolt = 0;
     }
 
-    if (counter <= n)
+    if (batteryCounter <= NUM_READINGS)
     {
       total += sensorVolt;
-      counter++;
+      batteryCounter++;
 
-      if (counter == n)
+      if (batteryCounter == NUM_READINGS)
       {
-        counterFlag = 1;
+        initialAverageFlag = 1;
       }
     }
-    else if (counter > n)
+    else if (batteryCounter > NUM_READINGS)
     {
-      avgSensorVolt = (total / n) + adjust;
-      batVolt = (avgSensorVolt * rScale) + batVoltOffset; // rScale is the (R1 + R2)/R2 value
-      // for the voltage divider, batVolt is like the Vin and avgSensorVolt is like Vout
+      avgSensorVolt = (total / NUM_READINGS) + adjust;
+      batVolt = (avgSensorVolt * resistorCoefficient) + batVoltOffset;
+      // For the voltage divider, batVolt is Vin and avgSensorVolt is Vout
       total = 0;
-      counter = 0;
+      batteryCounter = 0;
     }
 
     if (avgSensorVolt < 0)
     {
-      avgSensorVolt = 0;  // never let the average of positive values be negative
+      // Never let the average of positive values be negative
+      avgSensorVolt = 0;
     }
 
-    batPercentR = mapFloat(batVolt, BAT_MIN, BAT_MAX, 0.0, 100.0);  // map the float values
+    batPercentR = mapFloat(batVolt, BAT_MIN, BAT_MAX, 0.0, 100.0);
   }
 }
 
@@ -1459,10 +1442,10 @@ void printData(void)
 {
   Serial.print("   yState:   ");
   Serial.print(yState);
-  Serial.print("   barWidthL:   ");
-  Serial.print(barWidthL);
-  Serial.print("   barWidthR:  ");
-  Serial.print(barWidthR);
+  Serial.print("   barWidthLeft:   ");
+  Serial.print(barWidthLeft);
+  Serial.print("   barWidthRight:  ");
+  Serial.print(barWidthRight);
   Serial.print("   ");
   Serial.print(batVolt, BAT_PRECISION);
   Serial.print("   vib_toggle:  ");
@@ -1501,7 +1484,7 @@ void printRadioData(void)
   Serial.print("   ");
   Serial.print(getBit(settings, BIT0));
   Serial.print("   Radio Connection:  ");
-  Serial.print(statusSend);
+  Serial.print(sendStatus);
 
   Serial.println("  ");
 }
@@ -1527,24 +1510,21 @@ void printButtonData(void)
 }
 
 
-// Getters and setters for bitwise operations
 uint8_t getBit(uint8_t byte, uint8_t bit)
 {
-  // return value of a bit in byte
   return ( (byte & bit) ? 1 : 0 );
 }
 
 void setBit(uint8_t *byte, uint8_t bit, uint8_t value)
 {
-  // set the bit of the byte to the respective value (1 or 0)
   if (value == 0)
   {
-    // clear the specified bit to 0
+    // Clear the specified bit to 0
     *byte &= ~(bit);
   }
   else
   {
-    // set the specified bit to 1
+    // Set the specified bit to 1
     *byte |= bit;
   }
 }
@@ -1606,10 +1586,10 @@ void setup(void)
   pinMode(CHARGE_PIN, INPUT);
   pinMode(TFT_BL, OUTPUT);
 
-  // Print some newlines to split up from the ESP32 data
+  // For formatting
   Serial.print("\n\n");
 
-  // throw an error message if init error, keep initializing until it works
+  // Keep initializing until it works
   while (esp_now_init() != ESP_OK)
   {
     Serial.print("Radio init FAILED: ");
@@ -1641,21 +1621,21 @@ void setup(void)
   ledcSetup(VIB_CHANNEL, FREQ, RESOLUTION);
   ledcAttachPin(VIB_PIN, VIB_CHANNEL);
 
-  ledcWrite(BL_CHANNEL, brightness);  // between 0 and 1023 with the 10 bit resolution
+  ledcWrite(BL_CHANNEL, brightness);  // Between 0 and 1023 using 10 bit resolution
 
   analogReadResolution(12);
 
   disableMotor();
 
-  barWidthL = 0;        // make display left bar start as 0
-  barWidthR = 0;        // make display right bar start as 0
-  vib_toggle = false;   // make vib motor start as off
+  barWidthLeft = 0;      
+  barWidthRight = 0;      
+  vib_toggle = false; 
 
   batFlag = 1;
-  counter = 0;
+  batteryCounter = 0;
 
   batPercentS = 75;
-  rScale = ((float)R1 + R2) / R2;
+  resistorCoefficient = ((float)R1 + R2) / R2;
 
   Serial.println("Ready");
 }
@@ -1670,8 +1650,7 @@ void loop(void)
   // printButtonData();
   // printRadioData();
 
-  // Perform action if joystick flicked down
-  // When safety off
+  // Perform action if joystick flicked down when safety off
   if (vib_toggle == 1)
   {
 
@@ -1681,8 +1660,7 @@ void loop(void)
 
   }
 
-  // Perform action if joystick flicked to left
-  // When on home screen
+  // Perform action if joystick flicked to left when on home screen
   if (debugToggle == 1)
   {
 
@@ -1693,7 +1671,6 @@ void loop(void)
   }
 
   batPercentS = -1;
-  // batPercentS = 75;  // testing
 
   if (vibFlag == 1)
     pulseVib(175, 150, 30);
@@ -1701,7 +1678,6 @@ void loop(void)
   // Menu decision-making
   if (menu == HOME_MENU)
   {
-    // if I have switched into a new menu
     if (lastMenu != HOME_MENU)
       firstHomeRenderFlag = 0;
 
@@ -1726,11 +1702,10 @@ void loop(void)
   }
   else
   {
-    // in case we get any unexpected values
+    // In case we get any unexpected values
     menu = HOME_MENU;
   }
 
-  // state change stuff
   b1_state_last = b1_state;
   b2_state_last = b2_state;
   b3_state_last = b3_state;

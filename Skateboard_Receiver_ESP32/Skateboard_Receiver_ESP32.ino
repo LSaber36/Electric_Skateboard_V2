@@ -9,7 +9,7 @@ VescUart UART;
 #define TXD2 17
 #define VESC_DEBUG 1
 
-// definitons for single bits 0 - 7
+// Definitons for single bits 0 - 7
 #define BIT0 (1<<0)
 #define BIT1 (1<<1)
 #define BIT2 (1<<2)
@@ -22,14 +22,14 @@ VescUart UART;
 #define FANPIN 25
 #define LEDPIN 26
 #define BUZZER 27
-#define WHEEL_DIAMETER 83  // in mm
+#define WHEEL_DIAMETER 83  // In mm
 #define GEAR_RATIO 2.2
 
 #define RED 14
 #define GREEN 12
 #define BLUE 13
 
-// radio data declarations (data sent and received)
+// Radio data declarations (data sent and received)
 /* Remote Data
    ===========
    settings: will hold headlight, 3 sending types, other data
@@ -77,7 +77,7 @@ uint8_t headlightFlag = 0, dutyFlag = 0, rpmFlag = 0, currentFlag = 0;
 int16_t mphInt = 0;
 float rpmToMphCoeff = 0;
 int16_t skateboardVoltInt = 0;
-float skateboardVoltFloat = 0;  // multiply by 100, cast to int then send as int
+float skateboardVoltFloat = 0;  // Multiply by 100, cast to int then send as int
 
 // Skateboard values
 long motorRpm, tachometer;
@@ -101,7 +101,6 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
   sendRadioData();
 }
 
-// Send the radio data (for readability)
 void sendRadioData(void)
 {
   senderData.mph = mphInt;
@@ -117,29 +116,26 @@ void printBatteryData()
   Serial.println("");
 }
 
-// getters and setters for bitwise operations
+
 uint8_t getBit(uint8_t byte, uint8_t bit)
 {
-  // return value of a bit in byte
   return ( (byte & bit) ? 1 : 0 );
 }
 
 void setBit(uint8_t *byte, uint8_t bit, uint8_t value)
 {
-  // set the bit of the byte to the respective value (1 or 0)
   if (value == 0)
   {
-    // clear the specified bit to 0
+    // Clear the specified bit to 0
     *byte &= ~(bit);
   }
   else
   {
-    // set the specified bit to 1
+    // Set the specified bit to 1
     *byte |= bit;
   }
 }
 
-// get the settings and store them into the corresponding vars
 /*
    Settings Byte:
 
@@ -166,11 +162,9 @@ void getSettings(uint8_t settings)
   headlightFlag = getBit(settings, BIT4);
 }
 
-// Print general settings for debugging
 void printRadioData()
 {
-  // print the settings values in the order they occur from the byte
-
+  // Printed in the order they occur from the byte
   Serial.print(currentFlag);
   Serial.print("  ");
   Serial.print(rpmFlag);
@@ -210,14 +204,15 @@ void getVescData()
   if ( UART.getVescValues() )
   {
     if (VESC_DEBUG == 1)
+    {
       Serial.println("Fetching VESC data");
-    // we have more values that we can get,
-    // but we only need these for now ...
+    }       
+      
     motorRpm = UART.data.rpm;
     tachometer = UART.data.tachometer;
     batVoltage = UART.data.inpVoltage;
 
-    // wheel speed in mph based on motor rpm
+    // Wheel speed in mph based on motor rpm
     mphInt = (int)(motorRpm * rpmToMphCoeff);
   }
   else
@@ -239,12 +234,12 @@ void printVescData()
 
 void setup()
 {
-  // for debugging with computer
+  // For computer debugging
   Serial.begin(115200);
   Serial.setTimeout(10);
   WiFi.mode(WIFI_STA);
 
-  // for Vesc communication
+  // For Vesc communication
   Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2);
   Serial2.setTimeout(10);
 
@@ -253,7 +248,7 @@ void setup()
   // Print some newlines to split up from the ESP32 data
   Serial.print("\n\n");
 
-  // throw an error message if init error, keep initializing until it works
+  // Throw an error message if init error, keep initializing until it works
   while (esp_now_init() != ESP_OK)
   {
     Serial.print("Radio init FAILED: ");
@@ -286,7 +281,7 @@ void setup()
   pinMode(GREEN, OUTPUT);
   pinMode(BLUE, OUTPUT);
 
-  // blink the leds to indicate setup is complete
+  // Blink the leds to indicate setup is complete
   blinkStatusLeds();
 
   rpmToMphCoeff = (M_PI * WHEEL_DIAMETER * 60) / (304.8 * 5280 * GEAR_RATIO);
@@ -308,10 +303,11 @@ void loop()
 
   settingEnable = (currentFlag == 0  &&  rpmFlag == 0  &&  dutyFlag == 0) ? 0 : 1;
 
-  if (settingEnable == 1)  // motor is enabled
+  // Motor is allowed to be on
+  if (settingEnable == 1)
   {
     digitalWrite(GREEN, HIGH);
-    // we'll have this indicate when the motor is okay to use
+    // We'll have this indicate when we can use the motor
     if (currentFlag == 1)
     {
       if (speed > 0)
@@ -333,14 +329,13 @@ void loop()
       UART.setDuty((float)speed / 100);
     }
   }
-  else  // motor is not enabled
+  else  // Motor is not enabled
   {
     digitalWrite(GREEN, LOW);
     speed = 0;
     UART.setCurrent(0);
   }
 
-  // write LEDPIN & RED whatever the flag is (logic wise)
   digitalWrite(LEDPIN, (headlightFlag == 1) ? HIGH : LOW );
   digitalWrite(RED, (headlightFlag == 1) ? HIGH : LOW );
 
