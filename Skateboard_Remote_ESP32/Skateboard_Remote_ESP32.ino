@@ -1106,7 +1106,6 @@ void getJoystick(void)
       disableMotor();
       speed = 0;
       throttle = 0;
-      // speed = tempSpeed;
 
       if (last_y_pot != y_pot)
       {
