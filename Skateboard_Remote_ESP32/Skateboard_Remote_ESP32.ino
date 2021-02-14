@@ -837,6 +837,7 @@ void renderInitialSettingsMenu(void)
   int fontHeight = tft.fontHeight();
   int currentY, xCoord, rectWidth, rectHeight, textXOffset, padding;
   int currentSetting = 0;
+  char *titles[5] = {"Brightness", "Intensity", "Sensitivity", "Night Mode", "Debug mode"};
 
   // Setup the header
   tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);
@@ -858,42 +859,21 @@ void renderInitialSettingsMenu(void)
 
   // Print the setting names
   tft.setTextSize(2);
-  tft.setCursor(xCoord + textXOffset, currentY);
-  tft.print("Brightness");
-  settingOptions[currentSetting]->yCoordRef = currentY;
-  currentSetting++;  
-  currentY += fontHeight + padding;
-  tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);
+  for (currentSetting = 0; currentSetting < 5; currentSetting++)
+  {
+    if (currentSetting > 0)
+      currentY += padding*2;
 
-  currentY += padding*2;
-  tft.setCursor(xCoord + textXOffset, currentY);
-  tft.print("Intensity");
-  settingOptions[currentSetting]->yCoordRef = currentY;
-  currentSetting++;  
-  currentY += fontHeight + padding;
-  tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);  
+    tft.setCursor(xCoord + textXOffset, currentY);
+    tft.print(titles[currentSetting]);
+    settingOptions[currentSetting]->yCoordRef = currentY;
 
-  currentY += padding*2;
-  tft.setCursor(xCoord + textXOffset, currentY);
-  tft.print("Sensitivity");
-  settingOptions[currentSetting]->yCoordRef = currentY;
-  currentSetting++;
-  currentY += fontHeight + padding;
-  tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);  
-
-  currentY += padding*2;
-  tft.setCursor(xCoord + textXOffset, currentY);
-  tft.print("Night Mode");
-  settingOptions[currentSetting]->yCoordRef = currentY;
-  currentSetting++;
-  currentY += fontHeight + padding;
-  tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);
-
-  currentY += padding*2;
-  tft.setCursor(xCoord + textXOffset, currentY);
-  tft.print("Debug Mode");
-  settingOptions[currentSetting]->yCoordRef = currentY;
-
+    if (currentSetting < 4)
+    {
+      currentY += fontHeight + padding;
+      tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);  
+    }
+  }
 }
 
 void renderSettingsMenu(void)
