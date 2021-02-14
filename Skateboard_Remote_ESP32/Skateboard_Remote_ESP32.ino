@@ -966,7 +966,7 @@ void getJoystick(void)
       {
         switch (yState)
         {
-          case 0:  // Up max
+          case UPMAX:  // Up max
             if (throttle < 97  &&  throttle >= 0)  // Add 3 but don't excede 100
             {
               throttle += 3;
@@ -982,7 +982,7 @@ void getJoystick(void)
 
           break;
 
-          case 1:  // Up min
+          case UPMIN:  // Up min
             if (throttle < 100  &&  throttle >= 0)  // Bound throttle to 100
             {
               throttle ++;
@@ -994,7 +994,7 @@ void getJoystick(void)
 
           break;
 
-          case 2:  // Neutral
+          case MIDDLE:  // Neutral
             if (throttle > 0)
             {
               throttle --;
@@ -1006,7 +1006,7 @@ void getJoystick(void)
 
           break;
 
-          case 3:  // Down min
+          case DOWNMIN:  // Down min
             if (throttle > -100  &&  throttle <= 0)  // Bound throttle to -100
             {
               throttle --;
@@ -1018,7 +1018,7 @@ void getJoystick(void)
 
           break;
 
-          case 4:  // Down max
+          case DOWNMAX:  // Down max
             if (throttle > -97  &&  throttle <= 0)  // Subtract 3 but don't excede -100
             {
               throttle -= 3;
@@ -1052,7 +1052,7 @@ void getJoystick(void)
 
         switch (yState)
         {
-          case 0:  // Up max
+          case UPMAX:  // Up max
             // Increase the throttle (more)
             if (throttle < 97  &&  throttle >= 0)  // Add 3 but don't excede 100
             {
@@ -1065,7 +1065,7 @@ void getJoystick(void)
 
           break;
 
-          case 1:  // Up min
+          case UPMIN:  // Up min
             if (throttle < 100  &&  throttle >= 0)  // Add 1 to not overshoot throttle indicator
             {
               throttle ++;
@@ -1073,7 +1073,7 @@ void getJoystick(void)
 
           break;
 
-          case 2:  // Neutral
+          case MIDDLE:  // Neutral
             if (throttle > throttleTemp)
             {
               throttle--;
@@ -1081,11 +1081,11 @@ void getJoystick(void)
 
           break;
 
-          case 3:  // Down min
+          case DOWNMIN:  // Down min
             cruise = 0;
           break;
 
-          case 4:  // Down max
+          case DOWNMAX:  // Down max
             cruise = 0;
           break;
 
