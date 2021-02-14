@@ -200,6 +200,27 @@ int16_t brightness = 1023;  // Range is [0 - 1023]
 
 TFT_eSPI tft = TFT_eSPI();
 
+
+// Settings menu data
+typedef struct settingData
+{
+  int data;      // use determined by index (analog or digital) 
+  int yCoordRef;
+  int status;    // if the item is selected or not
+}settingsData;
+
+settingsData setting0, setting1, setting2, setting3, setting4;
+int xCoordRef = 180;
+
+settingData *settingOptions[5]
+{
+  &setting0,
+  &setting1,
+  &setting2,
+  &setting3,
+  &setting4
+};
+
 const uint16_t iconSkateboard [] PROGMEM =
 {
   0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
@@ -815,6 +836,7 @@ void renderInitialSettingsMenu(void)
 {
   int fontHeight = tft.fontHeight();
   int currentY, xCoord, rectWidth, rectHeight, textXOffset, padding;
+  int currentSetting = 0;
 
   // Setup the header
   tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);
@@ -832,40 +854,52 @@ void renderInitialSettingsMenu(void)
   rectHeight = 2;
   textXOffset = 10;
   padding = 6;
+  settingsMode = 0;
 
   // Print the setting names
   tft.setTextSize(2);
   tft.setCursor(xCoord + textXOffset, currentY);
   tft.print("Brightness");
+  settingOptions[currentSetting]->yCoordRef = currentY;
+  currentSetting++;  
   currentY += fontHeight + padding;
-  tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);  
+  tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);
 
   currentY += padding*2;
   tft.setCursor(xCoord + textXOffset, currentY);
   tft.print("Intensity");
+  settingOptions[currentSetting]->yCoordRef = currentY;
+  currentSetting++;  
   currentY += fontHeight + padding;
   tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);  
 
   currentY += padding*2;
   tft.setCursor(xCoord + textXOffset, currentY);
   tft.print("Sensitivity");
+  settingOptions[currentSetting]->yCoordRef = currentY;
+  currentSetting++;
   currentY += fontHeight + padding;
   tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);  
 
   currentY += padding*2;
   tft.setCursor(xCoord + textXOffset, currentY);
   tft.print("Night Mode");
+  settingOptions[currentSetting]->yCoordRef = currentY;
+  currentSetting++;
   currentY += fontHeight + padding;
-  tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);  
+  tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);
 
   currentY += padding*2;
   tft.setCursor(xCoord + textXOffset, currentY);
   tft.print("Debug Mode");
+  settingOptions[currentSetting]->yCoordRef = currentY;
 
 }
 
 void renderSettingsMenu(void)
 {
+  int i;
+
   // Only print certain parts of screen once (for optimization)
   if (firstSettingsRenderFlag == 0)
     renderInitialSettingsMenu();
@@ -874,6 +908,12 @@ void renderSettingsMenu(void)
   {
     tft.setCursor(65, 40);
     tft.print(settingsMode);
+  }
+
+  for (i = 0; i < 5; i++)
+  {
+    tft.setCursor(xCoordRef, settingOptions[i]->yCoordRef);
+    tft.print(settingOptions[i]->data);
   }
 }
 
