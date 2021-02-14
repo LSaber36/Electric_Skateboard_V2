@@ -38,11 +38,11 @@ int16_t y_pot = 0;
 int16_t last_y_pot = 0;
 
 // Joystick range identifiers
-#define UPMAX 0
-#define UPMIN 1
+#define UPMAX 4
+#define UPMIN 3
 #define MIDDLE 2
-#define DOWNMIN 3
-#define DOWNMAX 4
+#define DOWNMIN 1
+#define DOWNMAX 0
 
 // Joystick analogRead value identifiers
 #define UP_MAX_BOUND 500
@@ -869,6 +869,12 @@ void renderSettingsMenu(void)
   // Only print certain parts of screen once (for optimization)
   if (firstSettingsRenderFlag == 0)
     renderInitialSettingsMenu();
+
+  if (SCREEN_DEBUG != 0)
+  {
+    tft.setCursor(65, 40);
+    tft.print(settingsMode);
+  }
 }
 
 void renderInitialMemeMenu(void)
@@ -1158,6 +1164,21 @@ void getJoystick(void)
     // No menus while moving
     speed = 0;
     throttle = 0;
+
+    // Detect when we're changing the value in the settings menu
+    if (yState != yStateLast)
+    {
+      if (yState >= UPMIN  &&  yStateLast == MIDDLE)
+      {
+        if (settingsMode < 5)
+          settingsMode++;
+      }
+      else if (yState <= DOWNMIN  &&  yStateLast == MIDDLE)
+      {
+        if (settingsMode > 0)
+          settingsMode--;
+      }
+    }
   }
   else if (menu == MEME_MENU)
   {
