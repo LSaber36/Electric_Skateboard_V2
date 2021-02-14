@@ -1170,13 +1170,13 @@ void getJoystick(void)
     {
       if (yState >= UPMIN  &&  yStateLast == MIDDLE)
       {
-        if (settingsMode < 5)
-          settingsMode++;
+        if (settingsMode > 0)
+          settingsMode--;
       }
       else if (yState <= DOWNMIN  &&  yStateLast == MIDDLE)
       {
-        if (settingsMode > 0)
-          settingsMode--;
+        if (settingsMode < 5)
+          settingsMode++;
       }
     }
   }
