@@ -221,6 +221,9 @@ settingData *settingOptions[5]
   &setting4
 };
 
+char *titles[] = {"Brightness", "Intensity", "Sensitivity", "Night Mode", "Debug mode"};
+int numSettings;
+
 const uint16_t iconSkateboard [] PROGMEM =
 {
   0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
@@ -837,7 +840,6 @@ void renderInitialSettingsMenu(void)
   int fontHeight = tft.fontHeight();
   int currentY, xCoord, rectWidth, rectHeight, textXOffset, padding;
   int currentSetting = 0;
-  char *titles[5] = {"Brightness", "Intensity", "Sensitivity", "Night Mode", "Debug mode"};
 
   // Setup the header
   tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);
@@ -859,7 +861,7 @@ void renderInitialSettingsMenu(void)
 
   // Print the setting names
   tft.setTextSize(2);
-  for (currentSetting = 0; currentSetting < 5; currentSetting++)
+  for (currentSetting = 0; currentSetting < numSettings; currentSetting++)
   {
     if (currentSetting > 0)
       currentY += padding*2;
@@ -868,7 +870,7 @@ void renderInitialSettingsMenu(void)
     tft.print(titles[currentSetting]);
     settingOptions[currentSetting]->yCoordRef = currentY;
 
-    if (currentSetting < 4)
+    if (currentSetting < (numSettings - 1))
     {
       currentY += fontHeight + padding;
       tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);  
@@ -890,7 +892,7 @@ void renderSettingsMenu(void)
     tft.print(settingsMode);
   }
 
-  for (i = 0; i < 5; i++)
+  for (i = 0; i < numSettings; i++)
   {
     tft.setCursor(xCoordRef, settingOptions[i]->yCoordRef);
     tft.print(settingOptions[i]->data);
@@ -1672,6 +1674,8 @@ void setup(void)
 
   batPercentS = 75;
   resistorCoefficient = ((float)R1 + R2) / R2;
+
+  numSettings = (int)sizeof(titles)/(int)sizeof(*titles);
 
   Serial.println("Ready");
 }
