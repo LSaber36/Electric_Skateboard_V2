@@ -97,6 +97,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 {
   memcpy(&receiverData, incomingData, sizeof(receiverData));
   getSettings(receiverData.settings);
+  speed = receiverData.speed;
 
   sendRadioData();
 }
@@ -299,7 +300,7 @@ void loop()
 
   // printRadioData();
   // printBatteryData();
-  printVescData();
+  // printVescData();
 
   settingEnable = (currentFlag == 0  &&  rpmFlag == 0  &&  dutyFlag == 0) ? 0 : 1;
 
