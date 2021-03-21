@@ -1483,10 +1483,6 @@ void printData(void)
 {
   Serial.print("   yState:   ");
   Serial.print(yState);
-  Serial.print("   barWidthLeft:   ");
-  Serial.print(barWidthLeft);
-  Serial.print("   barWidthRight:  ");
-  Serial.print(barWidthRight);
   Serial.print("   ");
   Serial.print(batVolt, BAT_PRECISION);
   Serial.print("   chargeState:  ");
@@ -1497,6 +1493,8 @@ void printData(void)
   Serial.print(x_pot);
   Serial.print("   Y:   ");
   Serial.print(y_pot);
+  Serial.print("   Speed:   ");
+  Serial.print(speed);
 
   Serial.println("   ");
 }
