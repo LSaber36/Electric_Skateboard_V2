@@ -149,7 +149,11 @@ typedef struct receiverMessage
   uint16_t voltage;
 }receiverMessage;
 
-uint8_t broadcastAddress[] = {0xAC, 0x67, 0xB2, 0x31, 0x9A, 0xF0};
+// DEVKITV1
+// uint8_t broadcastAddress[] = {0xAC, 0x67, 0xB2, 0x31, 0x9A, 0xF0};
+// Breakout Board
+uint8_t broadcastAddress[] = {0xF0, 0x08, 0xD1, 0xD1, 0xDC, 0xFC};
+
 senderMessage senderData;
 receiverMessage receiverData;
 
