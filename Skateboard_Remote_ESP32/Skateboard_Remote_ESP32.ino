@@ -717,7 +717,7 @@ void renderHomeScreen(void)
 
   // Draw the remote battery info
   // Battery percent is valid
-  if (batPercentR > 0  &&  batPercentR <= 100)
+  if (batPercentR > 0  &&  batPercentR <= 100  &&  SCREEN_DEBUG != 0)
   {
     // Vaild percent and plugged in
     if (chargeFlag == 1)
@@ -1674,7 +1674,6 @@ void setup(void)
   batFlag = 1;
   batteryCounter = 0;
 
-  batPercentS = 75;
   resistorCoefficient = ((float)R1 + R2) / R2;
 
   numSettings = (int)sizeof(titles)/(int)sizeof(*titles);
