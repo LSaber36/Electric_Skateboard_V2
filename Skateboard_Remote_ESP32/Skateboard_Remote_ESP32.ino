@@ -912,8 +912,18 @@ void renderSettingsMenu(void)
   for (currentSetting = 0; currentSetting < numSettings; currentSetting++)
   {
     tft.setCursor(xCoordRef, settingOptions[currentSetting]->yCoordRef);
-    tft.print(settingOptions[currentSetting]->data);
-    // tft.print(settingOptions[currentSetting]->dataType);
+
+    if (settingOptions[currentSetting]->dataType == 'i')
+    {
+      tft.printf("%-3d", settingOptions[currentSetting]->data);
+    }
+    else if (settingOptions[currentSetting]->dataType == 'b')
+    {
+      if (settingOptions[currentSetting]->data == 1)
+        tft.printf("%-3s", "On");
+      else
+        tft.printf("%-3s", "Off");
+    }
   }
 }
 
@@ -1278,6 +1288,7 @@ void getButtons(void)
         }
         else if (menu == SETTINGS_MENU  &&  settingsMode == BACK_MODE)
         {
+          // This is where you want to save values to EEPROM
           menu = HOME_MENU;
         }
         else if (menu == MEME_MENU)
