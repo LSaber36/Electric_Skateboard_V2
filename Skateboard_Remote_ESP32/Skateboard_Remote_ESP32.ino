@@ -115,7 +115,7 @@ int8_t initialAverageFlag = 0, firstPrintFlag = 0, firstHomeRenderFlag = 0;
 int8_t firstSettingsRenderFlag = 0;
 int8_t firstMemeRenderFlag = 0;
 uint8_t menu = HOME_MENU, lastMenu = HOME_MENU;
-uint8_t settingsMode = 0;
+uint8_t settingsMode = 0, settingsModeLast = 0;
 
 
 // Radio data declarations (data sent and received)
@@ -197,6 +197,7 @@ float skateboardVolt = 0;
 #define LIGHT_BLUE 0x45DF
 #define LIGHT_GRAY 0xB5B6
 #define HOME_BG_COLOR 0xFDCF
+#define HIGHLIGHT_BG_COLOR LIGHT_BLUE
 #define INDICATOR_BLUE 0x351F
 #define SETTINGS_BG_COLOR LIGHT_GRAY
 #define MEME_BG_COLOR LIGHT_BLUE
@@ -237,6 +238,13 @@ char *initialSettingsOptions[][2] = {
   {"Debug mode",  "b"}
 };
 
+// Settings screen data
+#define INITIAL_Y 65
+#define X_COORD 4
+#define TEXT_X_OFFSET 10
+#define RECT_WIDTH 232
+#define RECT_HEIGHT 2
+#define PADDING 6
 int numSettings;
 
 const uint16_t iconSkateboard [] PROGMEM =
@@ -513,6 +521,7 @@ void sendRadioData(void)
 void renderInitialHomeScreen(void)
 {
   tft.fillScreen(HOME_BG_COLOR);
+  tft.setTextColor(TFT_BLACK, HOME_BG_COLOR);
 
   // Draw the throttle indicator
   tft.fillRect(17, 210, 2, 18, TFT_BLACK);          // Throttle left line
@@ -860,18 +869,13 @@ void renderInitialSettingsMenu(void)
   tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);
   tft.fillScreen(SETTINGS_BG_COLOR);
   tft.pushImage(15, 15, 23, 21, iconBackArrow, TFT_WHITE);
+  tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);
   tft.setTextSize(3);
   tft.setCursor(65, 13);
   tft.print("Settings");
 
-  // Setup the setting dividers
-  // Starting values for entire list
-  currentY = 65;
-  xCoord = 4;
-  rectWidth = 232;
-  rectHeight = 2;
-  textXOffset = 10;
-  padding = 6;
+  // Initialize values for printing
+  currentY = INITIAL_Y;
   settingsMode = 0;
 
   // Print the setting names
@@ -879,16 +883,16 @@ void renderInitialSettingsMenu(void)
   for (currentSetting = 0; currentSetting < numSettings; currentSetting++)
   {
     if (currentSetting > 0)
-      currentY += (padding * 2);
+      currentY += (PADDING * 2);
 
-    tft.setCursor(xCoord + textXOffset, currentY);
+    tft.setCursor(X_COORD + TEXT_X_OFFSET, currentY);
     tft.print(settingOptions[currentSetting]->title);
     settingOptions[currentSetting]->yCoordRef = currentY;
 
     if (currentSetting < (numSettings - 1))
     {
-      currentY += fontHeight + padding;
-      tft.fillRect(xCoord, currentY, rectWidth, rectHeight, TFT_BLACK);  
+      currentY += fontHeight + PADDING;
+      tft.fillRect(X_COORD, currentY, RECT_WIDTH, RECT_HEIGHT, TFT_BLACK);  
     }
   }
 }
@@ -923,6 +927,26 @@ void renderSettingsMenu(void)
         tft.printf("%-3s", "On");
       else
         tft.printf("%-3s", "Off");
+    }
+  }
+
+  if (settingsModeLast != settingsMode)
+  {    
+    if (settingsMode > 0)
+    {
+      // Print the new setting with highlights
+      tft.setCursor(X_COORD + TEXT_X_OFFSET, settingOptions[settingsMode-1]->yCoordRef);
+      tft.setTextColor(TFT_BLACK, HIGHLIGHT_BG_COLOR);
+      tft.print(settingOptions[settingsMode-1]->title);
+      tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);      
+    }
+
+    if (settingsModeLast > 0)
+    {
+      // Print the previous setting without highlights
+      tft.setCursor(X_COORD + TEXT_X_OFFSET, settingOptions[settingsModeLast-1]->yCoordRef);
+      tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);
+      tft.print(settingOptions[settingsModeLast-1]->title);
     }
   }
 }
@@ -1645,6 +1669,7 @@ void setup(void)
   tft.init();
   tft.setRotation(0);
   tft.fillScreen(HOME_BG_COLOR);
+  tft.setTextColor(TFT_BLACK, HOME_BG_COLOR);
   tft.setTextSize(2);
   tft.setTextWrap(false);
   tft.setSwapBytes(true);
@@ -1775,6 +1800,7 @@ void loop(void)
   last_y_pot = y_pot;
 
   lastMenu = menu;
+  settingsModeLast = settingsMode;
 
   sendRadioData();
 
