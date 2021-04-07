@@ -213,7 +213,7 @@ typedef struct settingData
   char dataType;
   char *title;
   int yCoordRef;
-  int status;     // if the item is selected or not
+  uint8_t status;     // if the item is selected or not
 }settingsData;
 
 settingsData setting0, setting1, setting2, setting3, setting4;
@@ -246,6 +246,7 @@ char *initialSettingsOptions[][2] = {
 #define RECT_HEIGHT 2
 #define PADDING 6
 int numSettings;
+uint8_t isEditingSetting = 0;
 
 const uint16_t iconSkateboard [] PROGMEM =
 {
@@ -910,12 +911,16 @@ void renderSettingsMenu(void)
     tft.setCursor(65, 40);
     tft.print(settingsMode);
     tft.print("   ");
-    tft.print(numSettings);
+    tft.print(isEditingSetting);
   }
 
   for (currentSetting = 0; currentSetting < numSettings; currentSetting++)
   {
     tft.setCursor(xCoordRef, settingOptions[currentSetting]->yCoordRef);
+
+    // Take care of highlighting the variable of the selected setting
+    if (settingOptions[currentSetting]->status == 1)
+      tft.setTextColor(TFT_BLACK, HIGHLIGHT_BG_COLOR);
 
     if (settingOptions[currentSetting]->dataType == 'i')
     {
@@ -928,8 +933,11 @@ void renderSettingsMenu(void)
       else
         tft.printf("%-3s", "Off");
     }
+
+    tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);
   }
 
+  // Take care of highlighting the selected text
   if (settingsModeLast != settingsMode)
   {    
     if (settingsMode > 0)
@@ -1244,12 +1252,40 @@ void getJoystick(void)
     {
       if (yState >= UPMIN  &&  yStateLast == MIDDLE)
       {
-        if (settingsMode > 0)
+        if (isEditingSetting == 1)
+        {
+          if (settingsMode > 0)
+          {
+            if (settingOptions[settingsMode-1]->dataType == 'b')
+              settingOptions[settingsMode-1]->data ^= BIT0;
+            else if (settingOptions[settingsMode-1]->dataType == 'i')
+            {
+              // Decrease, but only if above 0
+              if (settingOptions[settingsMode-1]->data < 255)
+                settingOptions[settingsMode-1]->data++;
+            }
+          }
+        }
+        else if (settingsMode > 0)
           settingsMode--;
       }
       else if (yState <= DOWNMIN  &&  yStateLast == MIDDLE)
       {
-        if (settingsMode < 5)
+        if (isEditingSetting == 1)
+        {
+          if (settingsMode > 0)
+          {
+            if (settingOptions[settingsMode-1]->dataType == 'b')
+              settingOptions[settingsMode-1]->data ^= BIT0;
+            else if (settingOptions[settingsMode-1]->dataType == 'i')
+            {
+              // Decrease, but only if above 0
+              if (settingOptions[settingsMode-1]->data > 0)
+                settingOptions[settingsMode-1]->data--;
+            }
+          }
+        }
+        else if (settingsMode < 5)
           settingsMode++;
       }
     }
@@ -1290,7 +1326,11 @@ void getButtons(void)
       {
         if (menu == SETTINGS_MENU)
         {
-          
+          if (settingsMode > 0)
+          {
+            settingOptions[settingsMode-1]->status ^= BIT0;
+            isEditingSetting ^= BIT0;
+          }
         }
         else if (menu == MEME_MENU)
         {
