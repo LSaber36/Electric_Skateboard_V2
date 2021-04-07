@@ -53,7 +53,7 @@ settings byte
 typedef struct senderMessage
 {
   uint16_t mph;
-  uint16_t voltage;
+  float voltage;
 }senderMessage;
 
 typedef struct receiverMessage
@@ -76,7 +76,6 @@ uint8_t headlightFlag = 0, dutyFlag = 0, rpmFlag = 0, currentFlag = 0;
 
 int16_t mphInt = 0;
 float rpmToMphCoeff = 0;
-int16_t skateboardVoltInt = 0;
 float skateboardVoltFloat = 0;  // Multiply by 100, cast to int then send as int
 
 // Skateboard values
@@ -105,7 +104,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 void sendRadioData(void)
 {
   senderData.mph = mphInt;
-  senderData.voltage = skateboardVoltInt;
+  senderData.voltage = batVoltage;
   esp_now_send(broadcastAddress, (uint8_t *) &senderData, sizeof(senderData));
 }
 
@@ -296,7 +295,7 @@ void loop()
   getVescData();
   // Testing
   mphInt = 10;
-  skateboardVoltInt = 12;
+  // batVoltage = 12;
 
   // printRadioData();
   // printBatteryData();

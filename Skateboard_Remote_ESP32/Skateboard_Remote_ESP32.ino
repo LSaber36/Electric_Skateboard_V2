@@ -146,7 +146,7 @@ typedef struct senderMessage
 typedef struct receiverMessage
 {
   uint16_t mph;
-  uint16_t voltage;
+  float voltage;
 }receiverMessage;
 
 // DEVKITV1
@@ -157,6 +157,7 @@ uint8_t broadcastAddress[] = {0xF0, 0x08, 0xD1, 0xD1, 0xDC, 0xFC};
 senderMessage senderData;
 receiverMessage receiverData;
 
+#define MAX_SKATEBOARD_BAT_VOLT 22.2
 int16_t mphInt = 0;
 uint8_t sendStatus = 0;
 uint8_t receiveStatus = 0;
@@ -179,8 +180,7 @@ uint8_t receiveStatus = 0;
 */
 uint8_t headlight = 0;
 int8_t motorCurrent = 0;  // Current to send to the receiver
-int16_t skateboardVoltInt = 0;  // Recieve as an int then divide by 100 and cast to float
-float skateboardVoltFloat = 0;
+float skateboardVolt = 0;
 
 
 // Throttle to speed calculation declarations
@@ -208,16 +208,17 @@ TFT_eSPI tft = TFT_eSPI();
 // Settings menu data
 typedef struct settingData
 {
-  int data;      // use determined by index (analog or digital) 
+  uint8_t data;       // use determined by index (analog or digital) 
+  char dataType;
+  char *title;
   int yCoordRef;
-  int status;    // if the item is selected or not
+  int status;     // if the item is selected or not
 }settingsData;
 
 settingsData setting0, setting1, setting2, setting3, setting4;
 int xCoordRef = 180;
 
-settingData *settingOptions[5]
-{
+settingData *settingOptions[] = {
   &setting0,
   &setting1,
   &setting2,
@@ -225,7 +226,17 @@ settingData *settingOptions[5]
   &setting4
 };
 
-char *titles[] = {"Brightness", "Intensity", "Sensitivity", "Night Mode", "Debug mode"};
+// These will only be used once to initialize the data
+// The number of setings options MUST be the same size as the number of settings
+// "b" is a boolean, "i" is an integer
+char *initialSettingsOptions[][2] = {
+  {"Brightness",  "i"},
+  {"Intensity",   "i"},
+  {"Sensitivity", "i"},
+  {"Night Mode",  "b"},
+  {"Debug mode",  "b"}
+};
+
 int numSettings;
 
 const uint16_t iconSkateboard [] PROGMEM =
@@ -489,7 +500,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 
   memcpy(&receiverData, incomingData, sizeof(receiverData));
   mphInt = receiverData.mph;
-  skateboardVoltInt = receiverData.voltage;
+  skateboardVolt = receiverData.voltage;
 }
 
 void sendRadioData(void)
@@ -638,7 +649,7 @@ void renderHomeScreen(void)
   if (SCREEN_DEBUG != 0)
   {
     tft.setCursor(42, 66);
-    tft.print(skateboardVoltFloat, BAT_PRECISION);
+    tft.print(skateboardVolt, BAT_PRECISION);
     tft.print("v   ");
   }
 
@@ -843,7 +854,7 @@ void renderInitialSettingsMenu(void)
 {
   int fontHeight = tft.fontHeight();
   int currentY, xCoord, rectWidth, rectHeight, textXOffset, padding;
-  int currentSetting = 0;
+  int currentSetting;
 
   // Setup the header
   tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);
@@ -868,10 +879,10 @@ void renderInitialSettingsMenu(void)
   for (currentSetting = 0; currentSetting < numSettings; currentSetting++)
   {
     if (currentSetting > 0)
-      currentY += padding*2;
+      currentY += (padding * 2);
 
     tft.setCursor(xCoord + textXOffset, currentY);
-    tft.print(titles[currentSetting]);
+    tft.print(settingOptions[currentSetting]->title);
     settingOptions[currentSetting]->yCoordRef = currentY;
 
     if (currentSetting < (numSettings - 1))
@@ -884,7 +895,7 @@ void renderInitialSettingsMenu(void)
 
 void renderSettingsMenu(void)
 {
-  int i;
+  int currentSetting;
 
   // Only print certain parts of screen once (for optimization)
   if (firstSettingsRenderFlag == 0)
@@ -894,12 +905,15 @@ void renderSettingsMenu(void)
   {
     tft.setCursor(65, 40);
     tft.print(settingsMode);
+    tft.print("   ");
+    tft.print(numSettings);
   }
 
-  for (i = 0; i < numSettings; i++)
+  for (currentSetting = 0; currentSetting < numSettings; currentSetting++)
   {
-    tft.setCursor(xCoordRef, settingOptions[i]->yCoordRef);
-    tft.print(settingOptions[i]->data);
+    tft.setCursor(xCoordRef, settingOptions[currentSetting]->yCoordRef);
+    tft.print(settingOptions[currentSetting]->data);
+    // tft.print(settingOptions[currentSetting]->dataType);
   }
 }
 
@@ -1240,7 +1254,11 @@ void getButtons(void)
       // determine what kind of press we had and act accordingly
       if (pressTime > 0  &&  pressTime <= SHORT_PRESS)
       {
-        if (menu == MEME_MENU)
+        if (menu == SETTINGS_MENU)
+        {
+          
+        }
+        else if (menu == MEME_MENU)
         {
           menu = HOME_MENU;
         }
@@ -1507,7 +1525,7 @@ void printRadioData(void)
 {
   Serial.print(mphInt);
   Serial.print("   ");
-  Serial.print(skateboardVoltFloat);
+  Serial.print(skateboardVolt);
   Serial.print("   ");
   Serial.print(getBit(settings, BIT7));
   Serial.print("   ");
@@ -1607,6 +1625,8 @@ void setHeadlight(uint8_t value)
 
 void setup(void)
 {
+  int currentSetting;
+  
   Serial.begin(115200);
   Serial.setTimeout(10);
   WiFi.mode(WIFI_STA);
@@ -1676,7 +1696,14 @@ void setup(void)
 
   resistorCoefficient = ((float)R1 + R2) / R2;
 
-  numSettings = (int)sizeof(titles)/(int)sizeof(*titles);
+  numSettings = (int)sizeof(settingOptions)/(int)sizeof(*settingOptions);
+
+  for (currentSetting = 0; currentSetting < numSettings; currentSetting++)
+  {
+    // Initialize settingsData fields
+    settingOptions[currentSetting]->title = initialSettingsOptions[currentSetting][0];
+    settingOptions[currentSetting]->dataType = initialSettingsOptions[currentSetting][1][0];;
+  }
 
   Serial.println("Ready");
 }
@@ -1691,7 +1718,8 @@ void loop(void)
   // printButtonData();
   // printRadioData();
 
-  batPercentS = -1;
+  // batPercentS = -1;
+  batPercentS = skateboardVolt / MAX_SKATEBOARD_BAT_VOLT;
 
   if (vibFlag == 1)
     pulseVib(175, 150, 30);
