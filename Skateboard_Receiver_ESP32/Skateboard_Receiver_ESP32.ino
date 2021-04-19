@@ -294,7 +294,7 @@ void loop()
 {
   getVescData();
   // Testing
-  mphInt = 10;
+  // mphInt = 10;
   // batVoltage = 12;
 
   // printRadioData();

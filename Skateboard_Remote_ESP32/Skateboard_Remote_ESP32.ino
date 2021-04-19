@@ -157,7 +157,7 @@ uint8_t broadcastAddress[] = {0xF0, 0x08, 0xD1, 0xD1, 0xDC, 0xFC};
 senderMessage senderData;
 receiverMessage receiverData;
 
-#define MAX_SKATEBOARD_BAT_VOLT 22.2
+#define MAX_SKATEBOARD_BAT_VOLT 24
 int16_t mphInt = 0;
 uint8_t sendStatus = 0;
 uint8_t receiveStatus = 0;
@@ -1795,7 +1795,7 @@ void loop(void)
   // printRadioData();
 
   // batPercentS = -1;
-  batPercentS = skateboardVolt / MAX_SKATEBOARD_BAT_VOLT;
+  batPercentS = 100 * (skateboardVolt / (float)MAX_SKATEBOARD_BAT_VOLT);
 
   if (vibFlag == 1)
     pulseVib(175, 150, 30);
