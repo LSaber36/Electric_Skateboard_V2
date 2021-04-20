@@ -29,6 +29,19 @@ VescUart UART;
 #define GREEN 12
 #define BLUE 13
 
+// Battery sensor declarations
+// Number of readings to average
+#define NUM_READINGS 100
+#define BAT_PRECISION 1
+int8_t batteryCounter = 0, initialAverageFlag = 0;
+int8_t batFlag = 0;
+float adjust = -.03;
+float total = 0, avgBatVoltage = 0;
+/* some definitions
+   batVoltage (supposed voltage)
+   avgBatVoltage (calculated)
+*/
+
 // Radio data declarations (data sent and received)
 /* Remote Data
    ===========
@@ -44,9 +57,21 @@ VescUart UART;
 int32_t speed = 0;
 
 /*
-settings byte
-00000000
-^  ^ ^^^   The following variables correspond to the bits (in order)
+   Settings Byte:
+
+   01234567
+   ^  ^ ^^
+
+  lsb
+      0   currentFlag
+      1   rpmFlag
+      2   dutyFlag
+      3
+      4   headlightFlag
+      5
+      6
+      7
+  msb
 */
 
 // Radio hardware definitions
@@ -104,7 +129,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 void sendRadioData(void)
 {
   senderData.mph = mphInt;
-  senderData.voltage = batVoltage;
+  senderData.voltage = avgBatVoltage;
   esp_now_send(broadcastAddress, (uint8_t *) &senderData, sizeof(senderData));
 }
 
@@ -203,6 +228,8 @@ void getVescData()
 {
   if ( UART.getVescValues() )
   {
+    batFlag = 1;
+
     if (VESC_DEBUG == 1)
     {
       Serial.println("Fetching VESC data");
@@ -217,6 +244,8 @@ void getVescData()
   }
   else
   {
+    batFlag = 0;
+
     if (VESC_DEBUG == 1)
       Serial.println("Unable to get VESC data");
   }
@@ -230,6 +259,37 @@ void printVescData()
   Serial.print("  ");
   Serial.print(batVoltage);
   Serial.println("  ");
+}
+
+void getBattery(void)
+{
+  if (batFlag == 1)
+  {
+    // NOTE: using a 12 bit reading resolution
+    if (batVoltage <= 0)
+    {
+      batteryCounter = 0;
+      avgBatVoltage = 0;
+    }
+
+    if (batteryCounter <= NUM_READINGS)
+    {
+      total += batVoltage;
+      batteryCounter++;
+    }
+    else if (batteryCounter > NUM_READINGS)
+    {
+      avgBatVoltage = (total / NUM_READINGS) + adjust;
+      total = 0;
+      batteryCounter = 0;
+    }
+
+    if (avgBatVoltage < 0)
+    {
+      // Never let the average of positive values be negative
+      avgBatVoltage = 0;
+    }
+  }
 }
 
 void setup()
@@ -293,6 +353,7 @@ void setup()
 void loop()
 {
   getVescData();
+  getBattery();
   // Testing
   // mphInt = 10;
   // batVoltage = 12;
@@ -338,7 +399,6 @@ void loop()
 
   digitalWrite(LEDPIN, (headlightFlag == 1) ? HIGH : LOW );
   digitalWrite(RED, (headlightFlag == 1) ? HIGH : LOW );
-
 
   // This is extremely important for preventing watchdog timeouts
   delay(5);

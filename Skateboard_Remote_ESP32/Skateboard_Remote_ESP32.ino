@@ -76,9 +76,12 @@ int8_t b3_clicked = 0, b3_held = 0;
 int8_t safety = 0, cruise = 0;
 
 // Battery sensor declarations
+// Number of readings to average
+#define NUM_READINGS 100
 #define BATTERY_PIN 14
 #define BAT_PRECISION 1
 #define CHARGE_PIN 12
+int8_t batteryCounter = 0, initialAverageFlag = 0;
 int16_t chargeState = 0;
 int8_t chargeFlag = 0;
 int8_t batFlag = 0;
@@ -96,9 +99,6 @@ float resistorCoefficient = 0;
    batVolt (final)
 */
 
-
-#define NUM_READINGS 100  // Number of readings to average
-
 // Menu identifiers
 #define HOME_MENU 0
 #define SETTINGS_MENU 1
@@ -110,8 +110,7 @@ float resistorCoefficient = 0;
 #define SENSITIVITY_MODE 2
 #define NIGHT_MODE 3
 #define DEBUG_MODE 4
-int8_t batteryCounter = 0;
-int8_t initialAverageFlag = 0, firstPrintFlag = 0, firstHomeRenderFlag = 0;
+int8_t firstPrintFlag = 0, firstHomeRenderFlag = 0;
 int8_t firstSettingsRenderFlag = 0;
 int8_t firstMemeRenderFlag = 0;
 uint8_t menu = HOME_MENU, lastMenu = HOME_MENU;
@@ -157,7 +156,7 @@ uint8_t broadcastAddress[] = {0xF0, 0x08, 0xD1, 0xD1, 0xDC, 0xFC};
 senderMessage senderData;
 receiverMessage receiverData;
 
-#define MAX_SKATEBOARD_BAT_VOLT 24
+#define MAX_SKATEBOARD_BAT_VOLT 25.2
 int16_t mphInt = 0;
 uint8_t sendStatus = 0;
 uint8_t receiveStatus = 0;
