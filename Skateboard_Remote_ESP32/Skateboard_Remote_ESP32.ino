@@ -1581,8 +1581,10 @@ void printData(void)
   Serial.print(yState);
   Serial.print("   ");
   Serial.print(batVolt, BAT_PRECISION);
-  Serial.print("   chargeState:  ");
-  Serial.print(chargeState);
+  Serial.print("   chargeFlag:  ");
+  Serial.print(chargeFlag);
+  Serial.print("   batFlag:  ");
+  Serial.print(batFlag);
   Serial.print("   throttle:  ");
   Serial.print(throttle);
   Serial.print("   X:   ");
