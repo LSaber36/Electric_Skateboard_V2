@@ -78,9 +78,9 @@ int8_t safety = 0, cruise = 0;
 // Battery sensor declarations
 // Number of readings to average
 #define NUM_READINGS 100
-#define BATTERY_PIN 14
+#define BATTERY_PIN 35
+#define CHARGE_PIN 34
 #define BAT_PRECISION 1
-#define CHARGE_PIN 12
 int8_t batteryCounter = 0, initialAverageFlag = 0;
 int16_t chargeState = 0;
 int8_t chargeFlag = 0;
@@ -1524,14 +1524,7 @@ void getBattery(void)
 {
   chargeState = analogRead(CHARGE_PIN);
 
-  if (chargeState > 4000)
-  {
-    chargeFlag = 1;
-  }
-  else
-  {
-    chargeFlag = 0;
-  }
+  chargeFlag = (chargeState > 4000) ? 1 : 0;
 
   if (batFlag == 1  &&  chargeFlag == 0)
   {
@@ -1581,10 +1574,16 @@ void printData(void)
   Serial.print(yState);
   Serial.print("   ");
   Serial.print(batVolt, BAT_PRECISION);
+  Serial.print("   chargeState:  ");
+  Serial.print(chargeState);
   Serial.print("   chargeFlag:  ");
   Serial.print(chargeFlag);
+  Serial.print("   batRead:  ");
+  Serial.print(batRead);
   Serial.print("   batFlag:  ");
   Serial.print(batFlag);
+  Serial.print("   batPercentR:  ");
+  Serial.print(batPercentR);
   Serial.print("   throttle:  ");
   Serial.print(throttle);
   Serial.print("   X:   ");
@@ -1643,7 +1642,6 @@ void printButtonData(void)
 
   Serial.println("   ");
 }
-
 
 uint8_t getBit(uint8_t byte, uint8_t bit)
 {
@@ -1722,6 +1720,7 @@ void setup(void)
   pinMode(B3_PIN, INPUT);
   pinMode(VIB_PIN, OUTPUT);
   pinMode(CHARGE_PIN, INPUT);
+  pinMode(BATTERY_PIN, INPUT);
   pinMode(TFT_BL, OUTPUT);
 
   // For formatting
