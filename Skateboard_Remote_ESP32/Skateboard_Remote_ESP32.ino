@@ -737,7 +737,7 @@ void renderHomeScreen(void)
 
   // Draw the remote battery info
   // Battery percent is valid
-  if (batPercentR > 0  &&  batPercentR <= 100  &&  SCREEN_DEBUG != 0)
+  if (batPercentR > 0  &&  batPercentR <= 100)
   {
     // Vaild percent and plugged in
     if (chargeFlag == 1)
