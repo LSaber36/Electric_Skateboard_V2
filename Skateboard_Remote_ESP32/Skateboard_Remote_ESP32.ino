@@ -788,11 +788,11 @@ void renderHomeScreen(void)
       tft.setCursor(163, 14);
 
       // Delay between 1st average complete and 1st print performed
-      if (initialAverageFlag == 0  &&  firstPrintFlag == 0)  // If before 1st average and 1st print
+      if (initialAverageFlag == 0)  // If before 1st average and 1st print
       {
         tft.print("Read.");
       }
-      else if (initialAverageFlag == 1  &&  firstPrintFlag == 1)  // If after 1st average and 1st print
+      else if (initialAverageFlag == 1)  // If after 1st average and 1st print
       {
         tft.print("Error");
       }
