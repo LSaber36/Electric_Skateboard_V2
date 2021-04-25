@@ -19,15 +19,15 @@ VescUart UART;
 #define BIT6 (1<<6)
 #define BIT7 (1<<7)
 
-#define FANPIN 25
-#define LEDPIN 26
-#define BUZZER 27
+#define FANPIN 12
+#define LEDPIN 14
+#define BUZZER 26
 #define WHEEL_DIAMETER 83  // In mm
 #define GEAR_RATIO 2.2
 
-#define RED 14
-#define GREEN 12
-#define BLUE 13
+#define RED 25
+#define GREEN 33
+#define BLUE 32
 
 // Battery sensor declarations
 // Number of readings to average
@@ -361,7 +361,6 @@ void loop()
   // printRadioData();
   // printBatteryData();
   // printVescData();
-
   settingEnable = (currentFlag == 0  &&  rpmFlag == 0  &&  dutyFlag == 0) ? 0 : 1;
 
   // Motor is allowed to be on
