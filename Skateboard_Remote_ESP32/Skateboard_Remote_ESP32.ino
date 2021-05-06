@@ -60,7 +60,7 @@ uint8_t vibFlag = 0;
 // Button declarations
 //*** Careful, these pins are the input-only pins that are wonky ***
 // Button 1 (joystick | misc)
-#define B1_PIN 14
+#define B1_PIN 12
 int8_t b1_state = 0, b1_state_last = 0;
 
 // Button 2 (top finger | cruise)
