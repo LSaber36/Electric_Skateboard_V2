@@ -663,7 +663,7 @@ void renderHomeScreen(void)
   }
 
   // Battery percent is valid and not plugged in
-  if ( (batPercentR > 0  &&  batPercentR <= 100)  &&  chargeFlag == 0)
+  if ( (batPercentR > 0  &&  batPercentR <= 100)  &&  chargeFlag == 0  &&  batRead != 0)
   {
     firstPrintFlag = 1;
     // Specific valid percent ranges
@@ -734,70 +734,80 @@ void renderHomeScreen(void)
     }
   }
 
-
-  // Draw the remote battery info
-  // Battery percent is valid
-  if (batPercentR > 0  &&  batPercentR <= 100)
+  if (batRead == 0)
   {
-    // Vaild percent and plugged in
-    if (chargeFlag == 1)
-    {
-  
-      tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
-      tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
-      tft.setCursor(163, 14);
-      tft.print("Chrg.");
-    }
-    // Vaild percent and not plugged in
-    else
-    {
-      // Draw the remote battery calculated voltage
-      tft.setCursor(164, 46);
-      tft.print(batPercentR, 0);
-      tft.print("%   ");
-
-      if (SCREEN_DEBUG != 0)
-      {
-        tft.setCursor(164, 66);
-        tft.print(batVolt, BAT_PRECISION);
-        tft.print("v   ");
-      }
-
-    }
+    tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
+    tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
+    tft.setCursor(163, 14);
+    tft.print("Error");
   }
-  // Battery percent is invalid
   else
   {
-    // Invaild percent and plugged in
-    if (chargeFlag == 1)
+    // Draw the remote battery info
+    // Battery percent is valid
+    if (batPercentR > 0  &&  batPercentR <= 100)
     {
-      batPercentR = 0;
+      // Vaild percent and plugged in
+      if (chargeFlag == 1)
+      {
+    
+        tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
+        tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
+        tft.setCursor(163, 14);
+        tft.print("Chrg.");
+      }
+      // Vaild percent and not plugged in
+      else
+      {
+        // Draw the remote battery calculated voltage
+        tft.setCursor(164, 46);
+        tft.print(batPercentR, 0);
+        tft.print("%   ");
 
-      tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
-      tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
-      tft.setCursor(163, 14);
-      tft.print("Pgrm.");
+        if (SCREEN_DEBUG != 0)
+        {
+          tft.setCursor(164, 66);
+          tft.print(batVolt, BAT_PRECISION);
+          tft.print("v   ");
+        }
+
+      }
     }
-    // Invalid percent and not plugged in
+    // Battery percent is invalid
     else
     {
-      batPercentR = 0;
-
-      tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
-      tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
-      tft.setCursor(163, 14);
-
-      // Delay between 1st average complete and 1st print performed
-      if (initialAverageFlag == 0)  // If before 1st average and 1st print
+      // Invaild percent and plugged in
+      if (chargeFlag == 1)
       {
-        tft.print("Read.");
+        batPercentR = 0;
+
+        tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
+        tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
+        tft.setCursor(163, 14);
+        tft.print("Pgrm.");
       }
-      else if (initialAverageFlag == 1)  // If after 1st average and 1st print
+      // Invalid percent and not plugged in
+      else
       {
-        tft.print("Error");
+        batPercentR = 0;
+
+        tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
+        tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
+        tft.setCursor(163, 14);
+
+        // Delay between 1st average complete and 1st print performed
+        if (initialAverageFlag == 0)  // If before 1st average and 1st print
+        {
+          tft.print("Read.");
+        }
+        else if (initialAverageFlag == 0)  // If after 1st average and 1st print
+        {
+          tft.print("Error");
+        }
       }
     }
   }
+
 
 
   // Draw the speed value
@@ -1790,7 +1800,7 @@ void loop(void)
   getButtons();
   getBattery();
 
-  // printData();
+  printData();
   // printButtonData();
   // printRadioData();
 
