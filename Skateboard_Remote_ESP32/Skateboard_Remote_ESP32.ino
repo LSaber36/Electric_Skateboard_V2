@@ -30,8 +30,8 @@ uint8_t joystickTimerFlag = 0;
 
 // Joystick declarations
 // Change the pin numbers here
-#define X_POT_PIN 39
-#define Y_POT_PIN 36
+#define X_POT_PIN 36
+#define Y_POT_PIN 39
 int16_t x_pot = 0;
 int16_t last_x_pot = 0;
 int16_t y_pot = 0;
