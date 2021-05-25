@@ -19,8 +19,8 @@ VescUart UART;
 #define BIT6 (1<<6)
 #define BIT7 (1<<7)
 
-#define FANPIN 12
-#define LEDPIN 14
+#define FANPIN 14
+#define LEDPIN 12
 #define BUZZER 26
 #define WHEEL_DIAMETER 83  // In mm
 #define GEAR_RATIO 2.2
