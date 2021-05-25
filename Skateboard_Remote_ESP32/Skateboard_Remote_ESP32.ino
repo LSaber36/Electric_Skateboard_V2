@@ -187,7 +187,7 @@ float skateboardVolt = 0;
 #define MAX_CURRENT 5
 #define MAX_BRAKE_CURRENT -5
 #define MAX_SPEED 15
-#define MAX_RPM 5500
+#define MAX_RPM 17000
 
 
 // Screen debugging: 0 is off and nonzero is on
@@ -818,7 +818,7 @@ void renderHomeScreen(void)
 
   if (SCREEN_DEBUG != 0)
   {
-    tft.setCursor(15, 186);
+    tft.setCursor(12, 186);
     tft.print(b3_clicked);
     tft.print(":");
     tft.print(b3_held);
@@ -826,13 +826,14 @@ void renderHomeScreen(void)
     tft.print(b2_clicked);
     tft.print(":");
     tft.print(b2_held);
-    tft.print("  ");
+    
+    tft.setCursor(116, 186);
     tft.print(safety);
     tft.print(":");
     tft.print(cruise);
 
-    tft.setCursor(180, 186);
-    tft.printf("%4d", speed);
+    tft.setCursor(170, 186);
+    tft.printf("%5d", speed);
   }
 
 
