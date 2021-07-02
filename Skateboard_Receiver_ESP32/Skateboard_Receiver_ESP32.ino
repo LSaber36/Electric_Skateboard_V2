@@ -25,9 +25,9 @@ VescUart UART;
 #define WHEEL_DIAMETER 83  // In mm
 #define GEAR_RATIO 2.2
 
-#define RED 25
+#define RED 32
 #define GREEN 33
-#define BLUE 32
+#define BLUE 25
 
 // Battery sensor declarations
 // Number of readings to average
