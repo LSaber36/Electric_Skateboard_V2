@@ -1853,7 +1853,6 @@ void loop(void)
   lastMenu = menu;
   settingsModeLast = settingsMode;
 
-  if (headlight == 1)
   sendRadioData();
 
   // This is extremely important for preventing watchdog timeouts
