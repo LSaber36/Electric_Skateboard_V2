@@ -148,10 +148,8 @@ typedef struct receiverMessage
   float voltage;
 }receiverMessage;
 
-// DEVKITV1
-// uint8_t broadcastAddress[] = {0xAC, 0x67, 0xB2, 0x31, 0x9A, 0xF0};
-// Breakout Board
-uint8_t broadcastAddress[] = {0xF0, 0x08, 0xD1, 0xD1, 0xDC, 0xFC};
+uint8_t broadcastAddress[] = {0x9C, 0x9C, 0x1F, 0xC7, 0xEA, 0xC8};
+// This device - 9C:9C:1F:EA:19:F0
 
 senderMessage senderData;
 receiverMessage receiverData;
@@ -1855,6 +1853,7 @@ void loop(void)
   lastMenu = menu;
   settingsModeLast = settingsMode;
 
+  if (headlight == 1)
   sendRadioData();
 
   // This is extremely important for preventing watchdog timeouts
