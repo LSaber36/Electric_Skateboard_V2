@@ -832,6 +832,8 @@ void renderHomeScreen(void)
     tft.print(":");
     tft.print(cruise);
 
+    tft.setCursor(170, 166);
+    tft.printf("%5d", headlight);
     tft.setCursor(170, 186);
     tft.printf("%5d", speed);
   }
