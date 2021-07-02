@@ -87,12 +87,8 @@ typedef struct receiverMessage
   uint32_t speed;
 }receiverMessage;
 
-// DEVKIT V1 Remote    7C:9E:BD:F3:50:DC
-// Standalone Remote   F0:08:D1:D1:6F:18
-
-// Testing
-// uint8_t broadcastAddress[] = {0x7C, 0x9E, 0xBD, 0xF3, 0x50, 0xDC};
-uint8_t broadcastAddress[] = {0xF0, 0x08, 0xD1, 0xD1, 0x6F, 0x18};
+uint8_t broadcastAddress[] = {0x9C, 0x9C, 0x1F, 0xEA, 0x19, 0xF0};
+// This device - 9C:9C:1F:C7:EA:C8
 
 senderMessage senderData;
 receiverMessage receiverData;
