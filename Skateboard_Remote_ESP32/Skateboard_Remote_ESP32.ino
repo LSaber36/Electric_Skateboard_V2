@@ -1801,7 +1801,7 @@ void loop(void)
   getButtons();
   getBattery();
 
-  printData();
+  // printData();
   // printButtonData();
   // printRadioData();
 
