@@ -157,7 +157,7 @@ receiverMessage receiverData;
 #define MAX_SKATEBOARD_BAT_VOLT 25.2
 int16_t mphInt = 0;
 uint8_t sendStatus = 0;
-uint8_t receiveStatus = 0;
+uint8_t receiveStatus = 1;
 /*
    Settings Byte:
 
