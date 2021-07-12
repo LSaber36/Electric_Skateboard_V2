@@ -1814,6 +1814,8 @@ void loop(void)
   // Menu decision-making
   if (menu == HOME_MENU)
   {
+    sendRadioData();
+    
     if (lastMenu != HOME_MENU)
       firstHomeRenderFlag = 0;
 
@@ -1852,8 +1854,6 @@ void loop(void)
 
   lastMenu = menu;
   settingsModeLast = settingsMode;
-
-  sendRadioData();
 
   // This is extremely important for preventing watchdog timeouts
   delay(5);
