@@ -185,7 +185,7 @@ float skateboardVolt = 0;
 #define MAX_CURRENT 5
 #define MAX_BRAKE_CURRENT -5
 #define MAX_SPEED 15
-#define MAX_RPM 17000
+#define MAX_RPM 10000
 
 
 // Screen debugging: 0 is off and nonzero is on
