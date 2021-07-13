@@ -189,7 +189,8 @@ float skateboardVolt = 0;
 
 
 // Screen debugging: 0 is off and nonzero is on
-#define SCREEN_DEBUG 1
+#define SCREEN_DEBUG 0
+uint8_t systemDebug = 0;
 
 #define LIGHT_BLUE 0x45DF
 #define LIGHT_GRAY 0xB5B6
@@ -224,16 +225,8 @@ settingData *settingOptions[] = {
   &setting4
 };
 
-// These will only be used once to initialize the data
-// The number of setings options MUST be the same size as the number of settings
-// "b" is a boolean, "i" is an integer
-char *initialSettingsOptions[][2] = {
-  {"Brightness",  "i"},
-  {"Intensity",   "i"},
-  {"Sensitivity", "i"},
-  {"Night Mode",  "b"},
-  {"Debug mode",  "b"}
-};
+// Data to initialize the settingsData array is found in setup(), 
+// since it only needs to exist once, in there
 
 // Settings screen data
 #define INITIAL_Y 65
@@ -653,7 +646,7 @@ void renderHomeScreen(void)
   tft.print(batPercentS, 0); 
   tft.print("%   ");
 
-  if (SCREEN_DEBUG != 0)
+  if (SCREEN_DEBUG != 0  ||  systemDebug == 1)
   {
     tft.setCursor(42, 66);
     tft.print(skateboardVolt, BAT_PRECISION);
@@ -762,7 +755,7 @@ void renderHomeScreen(void)
         tft.print(batPercentR, 0);
         tft.print("%   ");
 
-        if (SCREEN_DEBUG != 0)
+        if (SCREEN_DEBUG != 0  ||  systemDebug == 1)
         {
           tft.setCursor(164, 66);
           tft.print(batVolt, BAT_PRECISION);
@@ -814,7 +807,7 @@ void renderHomeScreen(void)
   tft.printf("%-2d", mphInt);
   tft.setTextSize(2);
 
-  if (SCREEN_DEBUG != 0)
+  if (SCREEN_DEBUG != 0  ||  systemDebug == 1)
   {
     tft.setCursor(12, 186);
     tft.print(b3_clicked);
@@ -916,7 +909,7 @@ void renderSettingsMenu(void)
   if (firstSettingsRenderFlag == 0)
     renderInitialSettingsMenu();
 
-  if (SCREEN_DEBUG != 0)
+  if (SCREEN_DEBUG != 0  ||  systemDebug == 1)
   {
     tft.setCursor(65, 40);
     tft.print(settingsMode);
@@ -1363,6 +1356,7 @@ void getButtons(void)
         else if (menu == SETTINGS_MENU  &&  settingsMode == BACK_MODE)
         {
           // This is where you want to save values to EEPROM
+          systemDebug = settingOptions[DEBUG_MODE]->data;
           menu = HOME_MENU;
         }
         else if (menu == MEME_MENU)
@@ -1710,6 +1704,26 @@ void setHeadlight(uint8_t value)
 
 void setup(void)
 {
+  // These will only be used once to initialize the data
+  // The number of setings options MUST be the same size as the number of settings
+  // "b" is a boolean, "i" is an integer
+  char *initialSettingsOptions[][2] = {
+    {"Brightness",  "i"},
+    {"Intensity",   "i"},
+    {"Sensitivity", "i"},
+    {"Night Mode",  "b"},
+    {"Debug mode",  "b"}
+  };
+
+  // Data to initialize settings variables (Rows here correspond to rows above)
+  uint8_t initialSettingsData[] = {
+    0,
+    0,
+    0,
+    0,
+    1
+  };
+
   int currentSetting;
   
   Serial.begin(115200);
@@ -1789,8 +1803,11 @@ void setup(void)
   {
     // Initialize settingsData fields
     settingOptions[currentSetting]->title = initialSettingsOptions[currentSetting][0];
-    settingOptions[currentSetting]->dataType = initialSettingsOptions[currentSetting][1][0];;
+    settingOptions[currentSetting]->dataType = initialSettingsOptions[currentSetting][1][0];
+    settingOptions[currentSetting]->data = initialSettingsData[currentSetting];
   }
+
+  systemDebug = initialSettingsData[DEBUG_MODE];
 
   Serial.println("Ready");
 }
