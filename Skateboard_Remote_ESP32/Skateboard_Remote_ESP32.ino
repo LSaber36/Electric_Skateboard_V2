@@ -804,7 +804,6 @@ void renderHomeScreen(void)
   // Draw the speed value
   tft.setCursor(25, 100);
   tft.setTextSize(9);
-  mphInt = 100;
   tft.printf("%-3d", mphInt);
   tft.setTextSize(2);
 
