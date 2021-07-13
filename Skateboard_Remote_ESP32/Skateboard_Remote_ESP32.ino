@@ -870,9 +870,12 @@ void renderInitialSettingsMenu(void)
   int currentSetting;
 
   // Setup the header
-  tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);
   tft.fillScreen(SETTINGS_BG_COLOR);
+
+  // Will always start on this, so no need for a comparison
+  tft.fillRect(14, 14, 25, 23, HIGHLIGHT_BG_COLOR);
   tft.pushImage(15, 15, 23, 21, iconBackArrow, TFT_WHITE);
+
   tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);
   tft.setTextSize(3);
   tft.setCursor(65, 13);
@@ -951,6 +954,12 @@ void renderSettingsMenu(void)
       tft.print(settingOptions[settingsMode-1]->title);
       tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);      
     }
+    else if (settingsMode == 0)
+    {
+      // Take care of back arrow special case
+      tft.fillRect(14, 14, 25, 23, HIGHLIGHT_BG_COLOR);
+      tft.pushImage(15, 15, 23, 21, iconBackArrow, TFT_WHITE);
+    }
 
     if (settingsModeLast > 0)
     {
@@ -958,6 +967,12 @@ void renderSettingsMenu(void)
       tft.setCursor(X_COORD + TEXT_X_OFFSET, settingOptions[settingsModeLast-1]->yCoordRef);
       tft.setTextColor(TFT_BLACK, SETTINGS_BG_COLOR);
       tft.print(settingOptions[settingsModeLast-1]->title);
+    }
+    else if (settingsModeLast == 0)
+    {
+      // Take care of back arrow special case
+      tft.fillRect(14, 14, 25, 23, SETTINGS_BG_COLOR);
+      tft.pushImage(15, 15, 23, 21, iconBackArrow, TFT_WHITE);
     }
   }
 }
