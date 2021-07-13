@@ -920,11 +920,14 @@ void renderSettingsMenu(void)
     tft.print(isEditingSetting);
   }
 
+  // Could be WILDLY optimized, but it doesn't matter since this screen is
+  // rarely accessed and only for small periods of time
+  
+  // Take care of highlighting the variable of the selected setting
   for (currentSetting = 0; currentSetting < numSettings; currentSetting++)
   {
     tft.setCursor(xCoordRef, settingOptions[currentSetting]->yCoordRef);
 
-    // Take care of highlighting the variable of the selected setting
     if (settingOptions[currentSetting]->status == 1)
       tft.setTextColor(TFT_BLACK, HIGHLIGHT_BG_COLOR);
 
