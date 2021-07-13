@@ -804,7 +804,8 @@ void renderHomeScreen(void)
   // Draw the speed value
   tft.setCursor(25, 100);
   tft.setTextSize(9);
-  tft.printf("%-2d", mphInt);
+  mphInt = 100;
+  tft.printf("%-3d", mphInt);
   tft.setTextSize(2);
 
   if (SCREEN_DEBUG != 0  ||  systemDebug == 1)
@@ -922,7 +923,7 @@ void renderSettingsMenu(void)
 
   // Could be WILDLY optimized, but it doesn't matter since this screen is
   // rarely accessed and only for small periods of time
-  
+
   // Take care of highlighting the variable of the selected setting
   for (currentSetting = 0; currentSetting < numSettings; currentSetting++)
   {
