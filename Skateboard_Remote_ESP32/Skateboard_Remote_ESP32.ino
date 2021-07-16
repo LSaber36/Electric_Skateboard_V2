@@ -145,6 +145,7 @@ typedef struct senderMessage
 typedef struct receiverMessage
 {
   uint16_t mph;
+  long rpm;
   float voltage;
 }receiverMessage;
 
@@ -156,6 +157,7 @@ receiverMessage receiverData;
 
 #define MAX_SKATEBOARD_BAT_VOLT 25.2
 int16_t mphInt = 0;
+long rpm = 0;
 uint8_t sendStatus = 0;
 uint8_t receiveStatus = 1;
 /*
@@ -499,6 +501,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 
   memcpy(&receiverData, incomingData, sizeof(receiverData));
   mphInt = receiverData.mph;
+  rpm = receiverData.rpm;
   skateboardVolt = receiverData.voltage;
 }
 
@@ -1622,6 +1625,8 @@ void printData(void)
 void printRadioData(void)
 {
   Serial.print(mphInt);
+  Serial.print("   ");
+  Serial.print(rpm);
   Serial.print("   ");
   Serial.print(skateboardVolt);
   Serial.print("   ");

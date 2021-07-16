@@ -78,6 +78,7 @@ int32_t speed = 0;
 typedef struct senderMessage
 {
   uint16_t mph;
+  long rpm;
   float voltage;
 }senderMessage;
 
@@ -125,6 +126,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 void sendRadioData(void)
 {
   senderData.mph = mphInt;
+  senderData.rpm = motorRpm;
   senderData.voltage = avgBatVoltage;
   esp_now_send(broadcastAddress, (uint8_t *) &senderData, sizeof(senderData));
 }
