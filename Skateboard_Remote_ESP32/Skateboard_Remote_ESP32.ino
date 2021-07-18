@@ -78,6 +78,7 @@ int8_t safety = 0, cruise = 0;
 // Battery sensor declarations
 // Number of readings to average
 #define NUM_READINGS 100
+#define CHARGE_THRESHOLD 3500
 #define BATTERY_PIN 35
 #define CHARGE_PIN 34
 #define BAT_PRECISION 1
@@ -827,7 +828,7 @@ void renderHomeScreen(void)
     tft.print(cruise);
 
     tft.setCursor(170, 166);
-    tft.printf("%5d", headlight);
+    tft.printf("%5d", chargeFlag);
     tft.setCursor(170, 186);
     tft.printf("%5d", speed);
   }
@@ -1550,7 +1551,7 @@ void getBattery(void)
 {
   chargeState = analogRead(CHARGE_PIN);
 
-  chargeFlag = (chargeState > 4000) ? 1 : 0;
+  chargeFlag = (chargeState > CHARGE_THRESHOLD) ? 1 : 0;
 
   if (batFlag == 1  &&  chargeFlag == 0)
   {
