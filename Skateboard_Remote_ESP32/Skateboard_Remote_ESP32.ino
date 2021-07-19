@@ -1289,6 +1289,8 @@ void getJoystick(void)
               // Decrease, but only if above 0
               if (settingOptions[settingsMode-1]->data + 10 <= 255)
                 settingOptions[settingsMode-1]->data += 10;
+              else if (settingOptions[settingsMode-1]->data == 250)
+                settingOptions[settingsMode-1]->data = 255;
             }
           }
         }
@@ -1306,7 +1308,9 @@ void getJoystick(void)
             else if (settingOptions[settingsMode-1]->dataType == 'i')
             {
               // Decrease, but only if above 0
-              if (settingOptions[settingsMode-1]->data - 10 >= 0)
+              if (settingOptions[settingsMode-1]->data == 255)
+                settingOptions[settingsMode-1]->data = 250;
+              else if (settingOptions[settingsMode-1]->data - 10 >= 0)
                 settingOptions[settingsMode-1]->data -= 10;
             }
           }
@@ -1744,7 +1748,7 @@ void setup(void)
 
   // Data to initialize settings variables (Rows here correspond to rows above)
   uint8_t initialSettingsData[] = {
-    250,
+    255,
     0,
     0,
     0,
