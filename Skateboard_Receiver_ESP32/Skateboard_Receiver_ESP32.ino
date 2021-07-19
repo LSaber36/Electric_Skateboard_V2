@@ -342,7 +342,7 @@ void setup()
   // Blink the leds to indicate setup is complete
   blinkStatusLeds();
 
-  rpmToMphCoeff = (M_PI * WHEEL_DIAMETER * 60) / (304.8 * 5280 * GEAR_RATIO);
+  rpmToMphCoeff = (60 * M_PI * WHEEL_DIAMETER) / (1000 * 1610 * GEAR_RATIO);
 
   Serial.println("Ready");
   delay(1000);
