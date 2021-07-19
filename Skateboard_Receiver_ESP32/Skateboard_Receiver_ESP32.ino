@@ -7,7 +7,7 @@
 VescUart UART;
 #define RXD2 16
 #define TXD2 17
-#define VESC_DEBUG 1
+#define VESC_DEBUG 0
 
 // Definitons for single bits 0 - 7
 #define BIT0 (1<<0)
@@ -226,8 +226,6 @@ void getVescData()
 {
   if ( UART.getVescValues() )
   {
-    batFlag = 1;
-
     if (VESC_DEBUG == 1)
     {
       Serial.println("Fetching VESC data");
@@ -237,12 +235,16 @@ void getVescData()
     tachometer = UART.data.tachometer;
     batVoltage = UART.data.inpVoltage;
 
+    if (batVoltage >= 10)
+      batFlag = 1;
+
     // Wheel speed in mph based on motor rpm
     mphInt = (int)(motorRpm * rpmToMphCoeff);
   }
   else
   {
     batFlag = 0;
+    avgBatVoltage = 0;
 
     if (VESC_DEBUG == 1)
       Serial.println("Unable to get VESC data");
