@@ -1286,8 +1286,8 @@ void getJoystick(void)
             else if (settingOptions[settingsMode-1]->dataType == 'i')
             {
               // Decrease, but only if above 0
-              if (settingOptions[settingsMode-1]->data < 255)
-                settingOptions[settingsMode-1]->data++;
+              if (settingOptions[settingsMode-1]->data + 10 <= 255)
+                settingOptions[settingsMode-1]->data += 10;
             }
           }
         }
@@ -1305,8 +1305,8 @@ void getJoystick(void)
             else if (settingOptions[settingsMode-1]->dataType == 'i')
             {
               // Decrease, but only if above 0
-              if (settingOptions[settingsMode-1]->data > 0)
-                settingOptions[settingsMode-1]->data--;
+              if (settingOptions[settingsMode-1]->data - 10 >= 0)
+                settingOptions[settingsMode-1]->data -= 10;
             }
           }
         }
