@@ -107,7 +107,8 @@ float resistorCoefficient = 0;
 
 // Settings menu identifiers
 #define BACK_MODE 0
-#define BRIGHTNESS_MODE 1
+#define BRIGHTNESS_MODE 0
+#define INTENSITY_MODE 1
 #define SENSITIVITY_MODE 2
 #define NIGHT_MODE 3
 #define DEBUG_MODE 4
@@ -1379,6 +1380,8 @@ void getButtons(void)
         {
           // This is where you want to save values to EEPROM
           systemDebug = settingOptions[DEBUG_MODE]->data;
+          brightness = settingOptions[BRIGHTNESS_MODE]->data * 4;
+          ledcWrite(BL_CHANNEL, brightness);
           menu = HOME_MENU;
         }
         else if (menu == MEME_MENU)
@@ -1741,7 +1744,7 @@ void setup(void)
 
   // Data to initialize settings variables (Rows here correspond to rows above)
   uint8_t initialSettingsData[] = {
-    0,
+    250,
     0,
     0,
     0,
