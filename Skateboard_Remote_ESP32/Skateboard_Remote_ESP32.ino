@@ -92,8 +92,8 @@ float total = 0, avgSensorVolt = 0, batVolt = 0, batVoltOffset = .095;  // .125;
 float resistorCoefficient = 0;
 #define BAT_MIN 2.5
 #define BAT_MAX 4.02
-#define R1 1.0050
-#define R2 1.9930
+#define R1 0.9945
+#define R2 1.9615
 /* some definitions
    sensorVolt (supposed voltage)
    avgSensorVolt (calculated)
