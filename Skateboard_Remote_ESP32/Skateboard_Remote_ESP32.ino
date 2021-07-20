@@ -573,7 +573,12 @@ void renderHomeScreen(void)
     tft.fillRect(41, 10, 58, 4, HOME_BG_COLOR);
     tft.fillRect(41, 30, 58, 4, HOME_BG_COLOR);
     tft.setCursor(41, 14);
-    tft.print("Error");
+    
+    if (sendStatus == 0  &&  receiveStatus == 0)
+      tft.print("Read.");
+    else
+      tft.print("Error");
+      
   }
   else if (batPercentS <= 20)
   {
