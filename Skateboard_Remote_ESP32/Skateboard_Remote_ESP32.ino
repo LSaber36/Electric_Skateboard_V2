@@ -1569,7 +1569,6 @@ void getBattery(void)
   {
     // NOTE: using a 12 bit reading resolution
     batRead = analogRead(BATTERY_PIN);
-    batRead = analogRead(BATTERY_PIN);
     sensorVolt = mapFloat(batRead, 0, 4095, 0, 3.3);
 
     if (batRead <= 0)
