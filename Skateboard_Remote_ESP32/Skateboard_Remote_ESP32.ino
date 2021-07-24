@@ -86,10 +86,13 @@ int8_t batteryCounter = 0, initialAverageFlag = 0;
 int16_t chargeState = 0;
 int8_t chargeFlag = 0;
 int8_t batFlag = 0;
-float batRead = 0;  // Raw read value from the sensor
-float sensorVolt = 0, adjust = -.03, batPercentR, batPercentS;
-float total = 0, avgSensorVolt = 0, batVolt = 0, batVoltOffset = .095;  // .125;
+int batRead = 0;  // Raw read value from the sensor
+float sensorVolt = 0, batPercentR, batPercentS;
+float total = 0, batVolt = 0;
+double avgSensorVolt = 0;
 float resistorCoefficient = 0;
+#define ADJUST -.03
+#define BAT_VOLT_OFFSET .095
 #define BAT_MIN 2.5
 #define BAT_MAX 4.02
 #define R1 0.9945
@@ -848,6 +851,7 @@ void renderHomeScreen(void)
   else
   {
     tft.fillCircle(18, 50, 7, HOME_BG_COLOR);
+    skateboardVolt = 0;
   }
 
 
@@ -1589,8 +1593,8 @@ void getBattery(void)
     }
     else if (batteryCounter > NUM_READINGS)
     {
-      avgSensorVolt = (total / NUM_READINGS) + adjust;
-      batVolt = (avgSensorVolt * resistorCoefficient) + batVoltOffset;
+      avgSensorVolt = (total / NUM_READINGS) + ADJUST;
+      batVolt = (avgSensorVolt * resistorCoefficient) + BAT_VOLT_OFFSET;
       // For the voltage divider, batVolt is Vin and avgSensorVolt is Vout
       total = 0;
       batteryCounter = 0;
