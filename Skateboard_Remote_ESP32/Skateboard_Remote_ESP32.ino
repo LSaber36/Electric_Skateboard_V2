@@ -78,7 +78,7 @@ int8_t safety = 0, cruise = 0;
 // Battery sensor declarations
 // Number of readings to average
 #define NUM_READINGS 100
-#define CHARGE_THRESHOLD 3500
+#define CHARGE_THRESHOLD 2500
 #define BATTERY_PIN 35
 #define CHARGE_PIN 34
 #define BAT_PRECISION 1
@@ -88,12 +88,13 @@ int8_t chargeFlag = 0;
 int8_t batFlag = 0;
 int batRead = 0;  // Raw read value from the sensor
 float sensorVolt = 0, batPercentR, batPercentS;
-float total = 0, batVolt = 0;
-double avgSensorVolt = 0;
+double total = 0;
+float batVolt = 0;
+float avgSensorVolt = 0;
 float resistorCoefficient = 0;
-#define ADJUST -.03
-#define BAT_VOLT_OFFSET .095
-#define BAT_MIN 2.5
+#define ADJUST -.14
+#define BAT_VOLT_OFFSET .455
+#define BAT_MIN 2.0
 #define BAT_MAX 4.02
 #define R1 0.9945
 #define R2 1.9615
@@ -743,7 +744,11 @@ void renderHomeScreen(void)
     tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
     tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
     tft.setCursor(163, 14);
-    tft.print("Error");
+
+    if (initialAverageFlag == 0)
+      tft.print("Chrg.");
+    else
+      tft.print("E(1) ");
   }
   else
   {
@@ -754,7 +759,6 @@ void renderHomeScreen(void)
       // Vaild percent and plugged in
       if (chargeFlag == 1)
       {
-    
         tft.fillRect(163, 10, 58, 4, HOME_BG_COLOR);
         tft.fillRect(163, 30, 58, 4, HOME_BG_COLOR);
         tft.setCursor(163, 14);
@@ -774,7 +778,6 @@ void renderHomeScreen(void)
           tft.print(batVolt, BAT_PRECISION);
           tft.print("v   ");
         }
-
       }
     }
     // Battery percent is invalid
@@ -804,9 +807,9 @@ void renderHomeScreen(void)
         {
           tft.print("Read.");
         }
-        else if (initialAverageFlag == 0)  // If after 1st average and 1st print
+        else if (initialAverageFlag == 1)  // If after 1st average and 1st print
         {
-          tft.print("Error");
+          tft.print("E(2) ");
         }
       }
     }
@@ -837,9 +840,9 @@ void renderHomeScreen(void)
     tft.print(cruise);
 
     tft.setCursor(170, 166);
-    tft.printf("%5d", rpm);
+    tft.printf("%5f", avgSensorVolt);
     tft.setCursor(170, 186);
-    tft.printf("%5d", speed);
+    tft.printf("%5f", batVolt);
   }
 
 
@@ -1579,22 +1582,20 @@ void getBattery(void)
     {
       batteryCounter = 0;
       avgSensorVolt = 0;
+      return;
     }
 
-    if (batteryCounter <= NUM_READINGS)
+    if (batteryCounter < NUM_READINGS)
     {
       total += sensorVolt;
       batteryCounter++;
-
-      if (batteryCounter == NUM_READINGS)
-      {
-        initialAverageFlag = 1;
-      }
     }
-    else if (batteryCounter > NUM_READINGS)
+    else if (batteryCounter >= NUM_READINGS)
     {
+      initialAverageFlag = 1;
+
       avgSensorVolt = (total / NUM_READINGS) + ADJUST;
-      batVolt = (avgSensorVolt * resistorCoefficient) + BAT_VOLT_OFFSET;
+      batVolt = (float)(avgSensorVolt * resistorCoefficient) + (float)BAT_VOLT_OFFSET;
       // For the voltage divider, batVolt is Vin and avgSensorVolt is Vout
       total = 0;
       batteryCounter = 0;
