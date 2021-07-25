@@ -840,9 +840,9 @@ void renderHomeScreen(void)
     tft.print(cruise);
 
     tft.setCursor(170, 166);
-    tft.printf("%5f", rpm);
+    tft.printf("%5d", rpm);
     tft.setCursor(170, 186);
-    tft.printf("%5f", speed);
+    tft.printf("%5d", speed);
   }
 
 
