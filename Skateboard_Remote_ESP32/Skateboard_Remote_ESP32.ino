@@ -840,9 +840,9 @@ void renderHomeScreen(void)
     tft.print(cruise);
 
     tft.setCursor(170, 166);
-    tft.printf("%5f", avgSensorVolt);
+    tft.printf("%5f", rpm);
     tft.setCursor(170, 186);
-    tft.printf("%5f", batVolt);
+    tft.printf("%5f", speed);
   }
 
 
