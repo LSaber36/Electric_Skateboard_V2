@@ -190,10 +190,10 @@ float skateboardVolt = 0;
 
 // Throttle to speed calculation declarations
 #define NUM_STEPS 5
-#define MAX_CURRENT 5
-#define MAX_BRAKE_CURRENT -5
+#define MAX_BRAKE_CURRENT -15
 #define MAX_SPEED 15
 #define MAX_RPM 10000
+#define MAX_CURRENT 20
 
 
 // Screen debugging: 0 is off and nonzero is on
@@ -1056,8 +1056,8 @@ void getJoystick(void)
     // Assign speed a value based on throttle position
     if (throttle > 0)
     {
-      enableRpm();
-      tempSpeed = map(throttle, 0, 100, 800, MAX_RPM);
+      enableCurrent();
+      tempSpeed = map(throttle, 0, 100, 0, MAX_CURRENT);
     }
     else if (throttle < 0)
     {
