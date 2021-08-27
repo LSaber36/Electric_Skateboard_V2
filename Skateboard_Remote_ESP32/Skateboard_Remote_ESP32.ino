@@ -1149,7 +1149,7 @@ void getJoystick(void)
             }
             else if (throttle > 0)
             {
-              throttle -= 20;
+              throttle = 0;
             }
 
           break;
