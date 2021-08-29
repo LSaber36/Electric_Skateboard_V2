@@ -3,6 +3,7 @@
 #include <SPI.h>
 #include <VescUart.h>
 #include <WiFi.h>
+#include <elapsedMillis.h>
 
 VescUart UART;
 #define RXD2 16
@@ -19,6 +20,8 @@ VescUart UART;
 #define BIT6 (1<<6)
 #define BIT7 (1<<7)
 
+elapsedMillis sendTimer;
+#define SEND_INTERVAL 1000
 #define FANPIN 14
 #define LEDPIN 12
 #define BUZZER 26
@@ -119,8 +122,6 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
   memcpy(&receiverData, incomingData, sizeof(receiverData));
   getSettings(receiverData.settings);
   speed = receiverData.speed;
-
-  sendRadioData();
 }
 
 void sendRadioData(void)
@@ -348,6 +349,7 @@ void setup()
 
   Serial.println("Ready");
   delay(1000);
+  sendTimer = 0;
 }
 
 void loop()
@@ -394,6 +396,12 @@ void loop()
     digitalWrite(GREEN, LOW);
     speed = 0;
     UART.setCurrent(0);
+  }
+
+  if (sendTimer > SEND_INTERVAL)
+  {
+    sendRadioData();
+    sendTimer = 0;
   }
 
   digitalWrite(LEDPIN, (headlightFlag == 1) ? HIGH : LOW );
