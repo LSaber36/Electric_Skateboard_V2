@@ -190,10 +190,10 @@ float skateboardVolt = 0;
 
 // Throttle to speed calculation declarations
 #define NUM_STEPS 5
-#define MAX_BRAKE_CURRENT -15
+#define MAX_BRAKE_CURRENT -30
 #define MAX_SPEED 15
 #define MAX_RPM 10000
-#define MAX_CURRENT 20
+#define MAX_CURRENT 25
 
 
 // Screen debugging: 0 is off and nonzero is on
@@ -1139,9 +1139,9 @@ void getJoystick(void)
           break;
 
           case DOWNMAX:  // Down max
-            if (throttle > -97  &&  throttle <= 0)  // Subtract 3 but don't excede -100
+            if (throttle > -95  &&  throttle <= 0)  // Subtract 3 but don't excede -100
             {
-              throttle -= 3;
+              throttle -= 5;
             }
             else if (throttle > -100  &&  throttle <= 0)  // Subtract 1 to not overshoot throttle indicator
             {
