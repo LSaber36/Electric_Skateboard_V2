@@ -190,10 +190,10 @@ float skateboardVolt = 0;
 
 // Throttle to speed calculation declarations
 #define NUM_STEPS 5
-#define MAX_BRAKE_CURRENT -35
+#define MAX_BRAKE_CURRENT -30
 #define MAX_SPEED 15
 #define MAX_RPM 10000
-#define MAX_CURRENT 30
+#define MAX_CURRENT 25
 
 
 // Screen debugging: 0 is off and nonzero is on
@@ -500,7 +500,10 @@ void OnDataSent(const uint8_t * mac, esp_now_send_status_t status)
 // Process received data
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 {
-  receiveStatus = (len == sizeof(receiverMessage)) ? 0 : 1;
+  if (len == sizeof(receiverMessage))
+    receiveStatus = 0;
+  else
+    receiveStatus = 1;
 
   memcpy(&receiverData, incomingData, sizeof(receiverData));
   mphInt = receiverData.mph;
@@ -1136,9 +1139,9 @@ void getJoystick(void)
           break;
 
           case DOWNMAX:  // Down max
-            if (throttle > -97  &&  throttle <= 0)  // Subtract 3 but don't excede -100
+            if (throttle > -95  &&  throttle <= 0)  // Subtract 3 but don't excede -100
             {
-              throttle -= 3;
+              throttle -= 5;
             }
             else if (throttle > -100  &&  throttle <= 0)  // Subtract 1 to not overshoot throttle indicator
             {
@@ -1868,8 +1871,7 @@ void loop(void)
   // Menu decision-making
   if (menu == HOME_MENU)
   {
-    if (throttle != 0)
-      sendRadioData();
+    sendRadioData();
     
     if (lastMenu != HOME_MENU)
       firstHomeRenderFlag = 0;
