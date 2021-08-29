@@ -500,10 +500,7 @@ void OnDataSent(const uint8_t * mac, esp_now_send_status_t status)
 // Process received data
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 {
-  if (len == sizeof(receiverMessage))
-    receiveStatus = 0;
-  else
-    receiveStatus = 1;
+  receiveStatus = (len == sizeof(receiverMessage)) ? 0 : 1;
 
   memcpy(&receiverData, incomingData, sizeof(receiverData));
   mphInt = receiverData.mph;
