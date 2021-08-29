@@ -1136,9 +1136,9 @@ void getJoystick(void)
           break;
 
           case DOWNMAX:  // Down max
-            if (throttle > -95  &&  throttle <= 0)  // Subtract 3 but don't excede -100
+            if (throttle > -97  &&  throttle <= 0)  // Subtract 3 but don't excede -100
             {
-              throttle -= 5;
+              throttle -= 3;
             }
             else if (throttle > -100  &&  throttle <= 0)  // Subtract 1 to not overshoot throttle indicator
             {
