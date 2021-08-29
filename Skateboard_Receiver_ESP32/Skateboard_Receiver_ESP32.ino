@@ -3,12 +3,11 @@
 #include <SPI.h>
 #include <VescUart.h>
 #include <WiFi.h>
-#include <elapsedMillis.h>
 
 VescUart UART;
 #define RXD2 16
 #define TXD2 17
-#define VESC_DEBUG 1
+#define VESC_DEBUG 0
 
 // Definitons for single bits 0 - 7
 #define BIT0 (1<<0)
@@ -20,8 +19,6 @@ VescUart UART;
 #define BIT6 (1<<6)
 #define BIT7 (1<<7)
 
-elapsedMillis sendTimer;
-#define SEND_INTERVAL 1000
 #define FANPIN 14
 #define LEDPIN 12
 #define BUZZER 26
@@ -122,6 +119,8 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
   memcpy(&receiverData, incomingData, sizeof(receiverData));
   getSettings(receiverData.settings);
   speed = receiverData.speed;
+  
+  sendRadioData();
 }
 
 void sendRadioData(void)
@@ -227,8 +226,6 @@ void getVescData()
 {
   if ( UART.getVescValues() )
   {
-    batFlag = 1;
-
     if (VESC_DEBUG == 1)
     {
       Serial.println("Fetching VESC data");
@@ -238,12 +235,16 @@ void getVescData()
     tachometer = UART.data.tachometer;
     batVoltage = UART.data.inpVoltage;
 
+    if (batVoltage >= 10)
+      batFlag = 1;
+
     // Wheel speed in mph based on motor rpm
     mphInt = (int)(motorRpm * rpmToMphCoeff);
   }
   else
   {
     batFlag = 0;
+    avgBatVoltage = 0;
 
     if (VESC_DEBUG == 1)
       Serial.println("Unable to get VESC data");
@@ -347,19 +348,12 @@ void setup()
 
   Serial.println("Ready");
   delay(1000);
-  sendTimer = 0;
 }
 
 void loop()
 {
   getVescData();
   getBattery();
-  // Testing
-  // mphInt = 10;
-  // batVoltage = 12;
-
-  // printRadioData();
-  // printBatteryData();
   // printVescData();
   settingEnable = (currentFlag == 0  &&  rpmFlag == 0  &&  dutyFlag == 0) ? 0 : 1;
 
@@ -394,12 +388,6 @@ void loop()
     digitalWrite(GREEN, LOW);
     speed = 0;
     UART.setCurrent(0);
-  }
-
-  if (sendTimer > SEND_INTERVAL)
-  {
-    sendRadioData();
-    sendTimer = 0;
   }
 
   digitalWrite(LEDPIN, (headlightFlag == 1) ? HIGH : LOW );
