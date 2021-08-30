@@ -1062,7 +1062,7 @@ void getJoystick(void)
     else if (throttle < 0)
     {
       enableCurrent();
-      tempSpeed = map(throttle, 0, -100, 0, MAX_BRAKE_CURRENT);
+      tempSpeed = map(throttle, -100, 0, MAX_BRAKE_CURRENT, 0);
     }
     else if (throttle == 0)
     {
