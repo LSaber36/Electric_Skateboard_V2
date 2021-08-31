@@ -162,6 +162,9 @@ senderMessage senderData;
 receiverMessage receiverData;
 
 #define MAX_SKATEBOARD_BAT_VOLT 25.2
+#define SKATEBOARD_VOLT_RANGE_DIFFERENCE 7.2
+#define SKATEBOARD_VOLT_RANGE_MAX 25.2
+#define SKATEBOARD_VOLT_RANGE_MIN 18
 int16_t mphInt = 0;
 long rpm = 0;
 uint8_t sendStatus = 0;
@@ -509,6 +512,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
   mphInt = receiverData.mph;
   rpm = receiverData.rpm;
   skateboardVolt = receiverData.voltage;
+  batPercentS = ((skateboardVolt - SKATEBOARD_VOLT_RANGE_MIN) / (float)SKATEBOARD_VOLT_RANGE_DIFFERENCE) * 100;
 }
 
 void sendRadioData(void)
@@ -579,7 +583,10 @@ void renderHomeScreen(void)
     tft.setCursor(41, 14);
     
     if (sendStatus == 0  &&  receiveStatus == 0)
+    {
       tft.print("Read.");
+      batPercentS = 0;
+    }
     else
       tft.print("Error");
       
@@ -855,6 +862,7 @@ void renderHomeScreen(void)
   {
     tft.fillCircle(18, 50, 7, HOME_BG_COLOR);
     skateboardVolt = 0;
+    batPercentS = 0;
   }
 
 
@@ -1861,9 +1869,6 @@ void loop(void)
   // printData();
   // printButtonData();
   // printRadioData();
-
-  // batPercentS = -1;
-  batPercentS = 100 * (skateboardVolt / (float)MAX_SKATEBOARD_BAT_VOLT);
 
   if (vibFlag == 1)
     pulseVib(175, 150, 30);
