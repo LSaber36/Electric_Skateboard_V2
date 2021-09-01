@@ -576,6 +576,22 @@ void renderHomeScreen(void)
     renderInitialHomeScreen();
 
   // Draw the skateboard battery level indicators
+
+  // Connection indicator
+  if (sendStatus == 0  &&  receiveStatus == 0)
+  {
+    tft.fillCircle(18, 50, 7, INDICATOR_BLUE);
+  }
+  else
+  {
+    tft.fillCircle(18, 50, 7, HOME_BG_COLOR);
+
+    // Set vars to 0 if connection check fails
+    skateboardVolt = 0;
+    mphInt = 0;
+    batPercentS = 0;
+  }
+
   if (batPercentS <= 0)
   {
     tft.fillRect(41, 10, 58, 4, HOME_BG_COLOR);
@@ -583,10 +599,7 @@ void renderHomeScreen(void)
     tft.setCursor(41, 14);
     
     if (sendStatus == 0  &&  receiveStatus == 0)
-    {
       tft.print("Read.");
-      batPercentS = 0;
-    }
     else
       tft.print("Error");
       
@@ -852,18 +865,6 @@ void renderHomeScreen(void)
     tft.printf("%5d", speed);
   }
 
-
-  // Connection indicator
-  if (sendStatus == 0  &&  receiveStatus == 0)
-  {
-    tft.fillCircle(18, 50, 7, INDICATOR_BLUE);
-  }
-  else
-  {
-    tft.fillCircle(18, 50, 7, HOME_BG_COLOR);
-    skateboardVolt = 0;
-    batPercentS = 0;
-  }
 
 
   // Draw the changing indicator bars (must be done from left to right)
