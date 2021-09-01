@@ -590,6 +590,7 @@ void renderHomeScreen(void)
     skateboardVolt = 0;
     mphInt = 0;
     batPercentS = 0;
+    rpm = 0;
   }
 
   if (batPercentS <= 0)
@@ -604,6 +605,7 @@ void renderHomeScreen(void)
       skateboardVolt = 0;
       mphInt = 0;
       batPercentS = 0;
+      rpm = 0;
     }
     else
       tft.print("Error");
