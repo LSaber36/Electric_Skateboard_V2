@@ -24,6 +24,7 @@ VescUart UART;
 #define BUZZER 26
 #define WHEEL_DIAMETER 83  // In mm
 #define GEAR_RATIO 2.2
+#define POLE_CONST 7
 
 #define RED 32
 #define GREEN 33
@@ -344,7 +345,7 @@ void setup()
   // Blink the leds to indicate setup is complete
   blinkStatusLeds();
 
-  rpmToMphCoeff = (60 * M_PI * WHEEL_DIAMETER) / (1000 * 1610 * GEAR_RATIO);
+  rpmToMphCoeff = (60 * M_PI * WHEEL_DIAMETER) / (1000 * 1610 * GEAR_RATIO * POLE_CONST);
 
   Serial.println("Ready");
   delay(1000);
