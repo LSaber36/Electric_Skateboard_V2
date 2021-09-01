@@ -1851,6 +1851,11 @@ void setup(void)
   batFlag = 1;
   batteryCounter = 0;
 
+  skateboardVolt = 0;
+  mphInt = 0;
+  batPercentS = 0;
+  rpm = 0;
+
   resistorCoefficient = ((float)R1 + R2) / R2;
 
   numSettings = (int)sizeof(settingOptions)/(int)sizeof(*settingOptions);
