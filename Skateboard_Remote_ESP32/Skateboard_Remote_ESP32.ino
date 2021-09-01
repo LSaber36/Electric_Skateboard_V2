@@ -599,7 +599,12 @@ void renderHomeScreen(void)
     tft.setCursor(41, 14);
     
     if (sendStatus == 0  &&  receiveStatus == 0)
+    {
       tft.print("Read.");
+      skateboardVolt = 0;
+      mphInt = 0;
+      batPercentS = 0;
+    }
     else
       tft.print("Error");
       
