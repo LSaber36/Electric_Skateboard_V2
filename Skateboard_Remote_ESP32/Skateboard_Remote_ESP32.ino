@@ -64,12 +64,12 @@ uint8_t vibFlag = 0;
 int8_t b1_state = 0, b1_state_last = 0;
 
 // Button 2 (top finger | cruise)
-#define B2_PIN 26
+#define B2_PIN 27
 int8_t b2_state = 0, b2_state_last = 0;
 int8_t b2_clicked = 0, b2_held = 0;
 
 // Button 3 (bottom finger button | enable)
-#define B3_PIN 27
+#define B3_PIN 26
 int8_t b3_state = 0, b3_state_last = 0;
 int8_t b3_clicked = 0, b3_held = 0;
 
