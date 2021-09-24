@@ -162,9 +162,9 @@ senderMessage senderData;
 receiverMessage receiverData;
 
 #define MAX_SKATEBOARD_BAT_VOLT 25.2
-#define SKATEBOARD_VOLT_RANGE_DIFFERENCE 7.2
-#define SKATEBOARD_VOLT_RANGE_MAX 25.2
+#define SKATEBOARD_VOLT_RANGE_MAX 25.3
 #define SKATEBOARD_VOLT_RANGE_MIN 18
+float skateboardVoltRangeDifference;
 int16_t mphInt = 0;
 long rpm = 0;
 uint8_t sendStatus = 0;
@@ -512,7 +512,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
   mphInt = receiverData.mph;
   rpm = receiverData.rpm;
   skateboardVolt = receiverData.voltage;
-  batPercentS = ((skateboardVolt - SKATEBOARD_VOLT_RANGE_MIN) / (float)SKATEBOARD_VOLT_RANGE_DIFFERENCE) * 100;
+  batPercentS = ((skateboardVolt - SKATEBOARD_VOLT_RANGE_MIN) / skateboardVoltRangeDifference) * 100;
 }
 
 void sendRadioData(void)
@@ -1857,6 +1857,7 @@ void setup(void)
   rpm = 0;
 
   resistorCoefficient = ((float)R1 + R2) / R2;
+  skateboardVoltRangeDifference = SKATEBOARD_VOLT_RANGE_MAX - SKATEBOARD_VOLT_RANGE_MIN;
 
   numSettings = (int)sizeof(settingOptions)/(int)sizeof(*settingOptions);
 
